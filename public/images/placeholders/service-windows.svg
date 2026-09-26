@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500" width="800" height="500"><title>Placeholder: service-windows – replace with a real photo (see config/images.ts)</title><defs><linearGradient id="w1" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#EAF3F5"/><stop offset="1" stop-color="#C9DDE2"/></linearGradient></defs>
+<rect width="800" height="500" fill="#F3EFE8"/><rect x="64" y="40" width="672" height="420" rx="6" fill="#FCFBF8"/>
+<rect x="96" y="70" width="288" height="360" fill="url(#w1)"/><rect x="416" y="70" width="288" height="360" fill="url(#w1)"/>
+<path d="M96 350 q144 -60 288 0 v80 h-288Z" fill="#9DBB93" opacity=".55"/>
+<path d="M416 360 q160 -80 288 -10 v80 h-288Z" fill="#A9C4A0" opacity=".5"/>
+<polygon points="440,70 512,70 448,430 416,430" fill="#fff" opacity=".45"/>
+<g transform="rotate(-18 272 210)"><rect x="208" y="200" width="128" height="15" rx="3" fill="#2E3A37"/><rect x="264" y="215" width="16" height="90" rx="3" fill="#0F5C4D"/></g></svg>

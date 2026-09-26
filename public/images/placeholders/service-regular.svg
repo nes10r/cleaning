@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500" width="800" height="500"><title>Placeholder: service-regular – replace with a real photo (see config/images.ts)</title><defs>
+<linearGradient id="aw" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F6F3ED"/><stop offset="1" stop-color="#EAE3D8"/></linearGradient>
+<linearGradient id="af" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#DBC6A4"/><stop offset="1" stop-color="#C9B18B"/></linearGradient>
+<linearGradient id="as" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FFFFFF"/><stop offset="1" stop-color="#D5E6EA"/></linearGradient>
+<linearGradient id="al" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FFF9EC" stop-opacity=".95"/><stop offset="1" stop-color="#FFF9EC" stop-opacity="0"/></linearGradient>
+<clipPath id="ac"><rect x="56" y="50" width="216" height="225"/></clipPath></defs>
+<rect width="800" height="360" fill="url(#aw)"/><rect y="360" width="800" height="140" fill="url(#af)"/><line x1="0" x2="800" y1="383.3" y2="383.3" stroke="#3A2A10" stroke-opacity=".06"/><line x1="0" x2="800" y1="406.7" y2="406.7" stroke="#3A2A10" stroke-opacity=".06"/><line x1="0" x2="800" y1="430" y2="430" stroke="#3A2A10" stroke-opacity=".06"/><line x1="0" x2="800" y1="453.3" y2="453.3" stroke="#3A2A10" stroke-opacity=".06"/><line x1="0" x2="800" y1="476.7" y2="476.7" stroke="#3A2A10" stroke-opacity=".06"/><rect y="353" width="800" height="7" fill="#F9F7F2"/>
+<rect x="49" y="43" width="230" height="239" rx="3" fill="#FCFBF8"/><rect x="56" y="50" width="216" height="225" fill="url(#as)"/>
+<g clip-path="url(#ac)"><circle cx="99.2" cy="263.8" r="64.8" fill="#A9C4A0" opacity=".55"/><circle cx="218" cy="286.3" r="75.6" fill="#9DBB93" opacity=".5"/></g>
+<rect x="162" y="50" width="4" height="225" fill="#FCFBF8"/><rect x="56" y="144.5" width="216" height="4" fill="#FCFBF8"/>
+<rect x="282" y="34" width="40" height="318" rx="5" fill="#E9E1D3"/>
+<polygon points="56,360 272,360 544,500 96,500" fill="url(#al)" opacity="0.8"/><ellipse cx="496" cy="423" rx="288" ry="37.8" fill="#EEE7DB"/>
+<line x1="576" y1="0" x2="576" y2="100" stroke="#8A7A62" stroke-width="1.5"/><path d="M528 130 a48 30 0 0 1 96 0 Z" fill="#DCD2C1"/>
+<rect x="352" y="245" width="400" height="65" rx="14" fill="#E6DFD2"/>
+<rect x="344" y="295" width="416" height="50" rx="12" fill="#F0EBE2"/>
+<rect x="392" y="260" width="104" height="40" rx="10" fill="#A8B79F"/><rect x="592" y="260" width="104" height="40" rx="10" fill="#D6CCBA"/>
+<rect x="376" y="404.8" width="240" height="7" rx="3" fill="#9A7654"/>
+<rect x="300" y="312" width="40" height="52" rx="8" fill="#D9CDBB"/><ellipse cx="302" cy="284" rx="16" ry="36" transform="rotate(-25 302 284)" fill="#5F8A5B"/><ellipse cx="338" cy="280" rx="16" ry="38" transform="rotate(28 338 280)" fill="#6E9A68"/><ellipse cx="320" cy="264" rx="14" ry="40" fill="#4F7A4C"/><path d="M227.9 364.3 L223 437 M252.1 364.3 L257 437" stroke="#2E3A37" stroke-width="19.4" stroke-linecap="round"/>
+<rect x="210.9" y="262.5" width="58.2" height="111.5" rx="24.2" fill="#0F5C4D"/><path d="M259.4 286.7 L322.4 267.3" stroke="#0F5C4D" stroke-width="21.8" stroke-linecap="round"/><rect x="312.7" y="247.9" width="29.1" height="21.8" rx="2" fill="#B7E36A"/>
+<path d="M218.2 286.7 L206.1 349.7" stroke="#0F5C4D" stroke-width="21.8" stroke-linecap="round"/>
+<circle cx="240" cy="233.4" r="24.2" fill="#E6C3A5"/><path d="M215.8 228.5 a24.2 24.2 0 0 1 48.5 0 Z" fill="#6B4A33"/></svg>

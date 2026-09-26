@@ -1,0 +1,161 @@
+/* ==========================================================================
+   ŠvaruVežu — design tokens v1.0
+   Source of truth for the website build. Values match design/svarapro-design-system.html.
+   Brand: ŠvaruVežu — "Švaresniam gyvenimui".
+   ========================================================================== */
+
+:root {
+  /* ---- Color: brand ---- */
+  --color-primary: #0F5C4D;          /* buttons, links, focus, selected states */
+  --color-primary-hover: #0B4A3E;
+  --color-primary-active: #083A31;
+  --color-primary-soft: #DFF3EC;     /* selected option bg, badges */
+  --color-primary-soft-hover: #CDEBDF;
+  --color-primary-border: #BFDCD2;   /* secondary button border */
+  --color-accent: #B7E36A;           /* sparingly: availability dot, marks on dark green */
+
+  /* ---- Color: surfaces ---- */
+  --color-background: #F8FAF8;
+  --color-surface: #FFFFFF;
+  --color-surface-secondary: #F0F4F1;
+  --color-surface-mint: #EAF5EF;     /* large tinted bands (trust section) */
+  --color-surface-inverse: #0F5C4D;  /* final CTA band */
+
+  /* ---- Color: text ---- */
+  --color-text-primary: #17211F;
+  --color-text-secondary: #5F6A66;   /* darkened from #66716D to pass AA on tinted surfaces */
+  --color-text-muted: #8C9692;       /* disabled + decorative only, never body text */
+  --color-text-inverse: #FFFFFF;
+
+  /* ---- Color: borders ---- */
+  --color-border: #E4E9E6;           /* cards, dividers (decorative) */
+  --color-border-hover: #C8D2CD;
+  --color-border-input: #879490;     /* form controls: 3.1:1 on white (WCAG 1.4.11) */
+  --color-border-input-hover: #5F6A66;
+
+  /* ---- Color: feedback ---- */
+  --color-success: #1D7A4E;
+  --color-success-soft: #E3F4EA;
+  --color-warning: #A8660B;
+  --color-warning-soft: #FDF3E1;
+  --color-error: #C0352B;
+  --color-error-soft: #FDECEA;
+  --color-rating: #D99A1E;           /* stars only */
+  --color-overlay: rgba(16, 28, 25, 0.48);
+
+  /* ---- Typography ---- */
+  --font-sans: "Manrope", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+
+  /* size / line-height — desktop (mobile overrides below) */
+  --text-display-xl: 64px;  --lh-display-xl: 1.05;  --ls-display-xl: -0.03em;
+  --text-display: 52px;     --lh-display: 1.08;     --ls-display: -0.025em;
+  --text-h1: 48px;          --lh-h1: 1.1;           --ls-h1: -0.025em;
+  --text-h2: 40px;          --lh-h2: 1.15;          --ls-h2: -0.02em;
+  --text-h3: 30px;          --lh-h3: 1.2;           --ls-h3: -0.015em;
+  --text-h4: 24px;          --lh-h4: 1.3;           --ls-h4: -0.01em;
+  --text-body-lg: 18px;     --lh-body-lg: 1.6;
+  --text-body: 16px;        --lh-body: 1.6;
+  --text-small: 14px;       --lh-small: 1.5;
+  --text-caption: 12px;     --lh-caption: 1.4;      --ls-caption: 0.02em;
+  --text-eyebrow: 13px;     --ls-eyebrow: 0.08em;   /* uppercase section labels */
+
+  /* ---- Spacing (8px base; name = px / 4) ---- */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+  --space-16: 64px;
+  --space-20: 80px;
+  --space-24: 96px;
+  --space-30: 120px;
+
+  --section-y: 120px;       /* 80px tablet, 64px mobile */
+  --container-max: 1200px;
+  --container-pad: 32px;    /* 24px tablet, 16px mobile (20px ≥ 375px) */
+  --grid-gutter: 24px;      /* 20px tablet, 16px mobile */
+
+  /* ---- Radius ---- */
+  --radius-xs: 6px;         /* checkbox */
+  --radius-sm: 8px;         /* chips inside inputs, skeleton lines */
+  --radius-button: 12px;
+  --radius-input: 12px;
+  --radius-card-sm: 16px;
+  --radius-card: 20px;
+  --radius-surface: 24px;   /* calculator, modal, booking card */
+  --radius-hero: 28px;
+  --radius-pill: 999px;     /* tags, statuses, compact filters only */
+
+  /* ---- Shadows ---- */
+  --shadow-xs: 0 1px 2px rgba(23, 33, 31, 0.05);
+  --shadow-sm: 0 1px 2px rgba(23, 33, 31, 0.04), 0 2px 8px rgba(23, 33, 31, 0.04);
+  --shadow-md: 0 2px 4px rgba(23, 33, 31, 0.04), 0 8px 24px rgba(23, 33, 31, 0.06);
+  --shadow-lg: 0 4px 8px rgba(23, 33, 31, 0.04), 0 16px 40px rgba(23, 33, 31, 0.08);
+  --shadow-xl: 0 8px 16px rgba(23, 33, 31, 0.06), 0 24px 64px rgba(23, 33, 31, 0.16);
+  --shadow-primary-hover: 0 8px 20px -8px rgba(15, 92, 77, 0.5);
+  --ring-focus: 0 0 0 2px #FFFFFF, 0 0 0 4px var(--color-primary);
+  --ring-input: 0 0 0 4px rgba(15, 92, 77, 0.14);
+  --ring-input-error: 0 0 0 4px rgba(192, 53, 43, 0.14);
+
+  /* ---- Motion ---- */
+  --dur-micro: 150ms;       /* checkbox, icon swap, color */
+  --dur-button: 200ms;
+  --dur-card: 250ms;
+  --dur-accordion: 280ms;
+  --dur-modal: 300ms;
+  --dur-reveal: 500ms;
+  --dur-hero: 600ms;
+  --stagger: 70ms;
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);      /* entrances, hovers */
+  --ease-in: cubic-bezier(0.4, 0, 1, 1);           /* exits */
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);   /* progress, height */
+
+  /* ---- Z-index ---- */
+  --z-base: 0;
+  --z-raised: 10;
+  --z-dropdown: 20;
+  --z-sticky-cta: 40;
+  --z-header: 50;
+  --z-overlay: 100;
+  --z-modal: 110;
+  --z-toast: 200;
+
+  /* ---- Layout ---- */
+  --header-h: 78px;         /* 64px < 1024px */
+  --control-h: 52px;        /* buttons & inputs; 56px on mobile */
+  --touch-min: 44px;
+}
+
+/* Breakpoints (use in media/container queries; CSS vars can't be used there)
+   mobile  < 640px
+   tablet  640–1023px
+   desktop 1024–1439px
+   large   ≥ 1440px                                                            */
+
+@media (max-width: 1023px) {
+  :root {
+    --text-display-xl: 48px; --text-display: 44px; --text-h1: 40px; --text-h2: 34px; --text-h3: 26px;
+    --section-y: 80px; --container-pad: 24px; --grid-gutter: 20px; --header-h: 64px;
+  }
+}
+@media (max-width: 639px) {
+  :root {
+    --text-display-xl: 38px; --lh-display-xl: 1.1;
+    --text-display: 34px; --text-h1: 36px; --text-h2: 30px; --lh-h2: 1.2;
+    --text-h3: 24px; --text-h4: 20px; --text-body-lg: 17px;
+    --section-y: 64px; --container-pad: 16px; --grid-gutter: 16px; --control-h: 56px;
+  }
+}
+@media (min-width: 375px) and (max-width: 639px) { :root { --container-pad: 20px; } }
+
+@media (prefers-reduced-motion: reduce) {
+  :root { --dur-reveal: 200ms; --dur-hero: 200ms; --stagger: 0ms; }
+  /* Remove translate/scale/parallax; keep opacity-only transitions. */
+}

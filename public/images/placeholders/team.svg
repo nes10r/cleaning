@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800" width="1200" height="800"><title>Placeholder: team – replace with a real photo (see config/images.ts)</title><defs>
+<linearGradient id="tw" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F6F3ED"/><stop offset="1" stop-color="#EAE3D8"/></linearGradient>
+<linearGradient id="tf" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#DBC6A4"/><stop offset="1" stop-color="#C9B18B"/></linearGradient>
+<linearGradient id="ts" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FFFFFF"/><stop offset="1" stop-color="#D5E6EA"/></linearGradient>
+<linearGradient id="tl" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FFF9EC" stop-opacity=".95"/><stop offset="1" stop-color="#FFF9EC" stop-opacity="0"/></linearGradient>
+<clipPath id="tc"><rect x="84" y="80" width="324" height="360"/></clipPath></defs>
+<rect width="1200" height="576" fill="url(#tw)"/><rect y="576" width="1200" height="224" fill="url(#tf)"/><line x1="0" x2="1200" y1="613.3" y2="613.3" stroke="#3A2A10" stroke-opacity=".06"/><line x1="0" x2="1200" y1="650.7" y2="650.7" stroke="#3A2A10" stroke-opacity=".06"/><line x1="0" x2="1200" y1="688" y2="688" stroke="#3A2A10" stroke-opacity=".06"/><line x1="0" x2="1200" y1="725.3" y2="725.3" stroke="#3A2A10" stroke-opacity=".06"/><line x1="0" x2="1200" y1="762.7" y2="762.7" stroke="#3A2A10" stroke-opacity=".06"/><rect y="569" width="1200" height="7" fill="#F9F7F2"/>
+<rect x="77" y="73" width="338" height="374" rx="3" fill="#FCFBF8"/><rect x="84" y="80" width="324" height="360" fill="url(#ts)"/>
+<g clip-path="url(#tc)"><circle cx="148.8" cy="422" r="97.2" fill="#A9C4A0" opacity=".55"/><circle cx="327" cy="458" r="113.4" fill="#9DBB93" opacity=".5"/></g>
+<rect x="244" y="80" width="4" height="360" fill="#FCFBF8"/><rect x="84" y="231.2" width="324" height="4" fill="#FCFBF8"/>
+<rect x="418" y="64" width="60" height="504" rx="5" fill="#E9E1D3"/>
+<polygon points="84,576 408,576 816,800 144,800" fill="url(#tl)" opacity="0.8"/><path d="M436 534.4 L428 654.4 M476 534.4 L484 654.4" stroke="#2E3A37" stroke-width="32" stroke-linecap="round"/>
+<rect x="408" y="366.4" width="96" height="184" rx="40" fill="#0F5C4D"/><path d="M492 406.4 L512 510.4" stroke="#0F5C4D" stroke-width="36" stroke-linecap="round"/>
+<path d="M420 406.4 L400 510.4" stroke="#0F5C4D" stroke-width="36" stroke-linecap="round"/>
+<circle cx="456" cy="318.4" r="40" fill="#E6C3A5"/><path d="M416 310.4 a40 40 0 0 1 80 0 Z" fill="#6B4A33"/><path d="M602.6 548.2 L594 676.8 M645.4 548.2 L654 676.8" stroke="#2E3A37" stroke-width="34.3" stroke-linecap="round"/>
+<rect x="572.6" y="368.2" width="102.9" height="197.1" rx="42.9" fill="#0F5C4D"/><path d="M662.6 411.1 L684 522.5" stroke="#0F5C4D" stroke-width="38.6" stroke-linecap="round"/>
+<path d="M585.4 411.1 L564 522.5" stroke="#0F5C4D" stroke-width="38.6" stroke-linecap="round"/>
+<circle cx="624" cy="316.8" r="42.9" fill="#E6C3A5"/><path d="M581.1 308.2 a42.9 42.9 0 0 1 85.7 0 Z" fill="#6B4A33"/><path d="M772 534.4 L764 654.4 M812 534.4 L820 654.4" stroke="#2E3A37" stroke-width="32" stroke-linecap="round"/>
+<rect x="744" y="366.4" width="96" height="184" rx="40" fill="#0F5C4D"/><path d="M828 406.4 L848 510.4" stroke="#0F5C4D" stroke-width="36" stroke-linecap="round"/>
+<path d="M756 406.4 L736 510.4" stroke="#0F5C4D" stroke-width="36" stroke-linecap="round"/>
+<circle cx="792" cy="318.4" r="40" fill="#E6C3A5"/><path d="M752 310.4 a40 40 0 0 1 80 0 Z" fill="#6B4A33"/><rect x="1003.4" y="505.7" width="57.1" height="74.3" rx="11.4" fill="#D9CDBB"/><ellipse cx="1006.3" cy="465.7" rx="22.9" ry="51.4" transform="rotate(-25 1006.3 465.7)" fill="#5F8A5B"/><ellipse cx="1057.7" cy="460" rx="22.9" ry="54.3" transform="rotate(28 1057.7 460)" fill="#6E9A68"/><ellipse cx="1032" cy="437.1" rx="20" ry="57.1" fill="#4F7A4C"/></svg>

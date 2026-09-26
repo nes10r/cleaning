@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1120 1240" width="1120" height="1240"><title>Placeholder: hero-apartment – replace with a real photo (see config/images.ts)</title><defs>
+<linearGradient id="hw" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F6F3ED"/><stop offset="1" stop-color="#EAE3D8"/></linearGradient>
+<linearGradient id="hf" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#DBC6A4"/><stop offset="1" stop-color="#C9B18B"/></linearGradient>
+<linearGradient id="hs" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FFFFFF"/><stop offset="1" stop-color="#D5E6EA"/></linearGradient>
+<linearGradient id="hl" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FFF9EC" stop-opacity=".95"/><stop offset="1" stop-color="#FFF9EC" stop-opacity="0"/></linearGradient>
+<clipPath id="hc"><rect x="78.4" y="124" width="302.4" height="558"/></clipPath></defs>
+<rect width="1120" height="892.8" fill="url(#hw)"/><rect y="892.8" width="1120" height="347.2" fill="url(#hf)"/><line x1="0" x2="1120" y1="950.7" y2="950.7" stroke="#3A2A10" stroke-opacity=".06"/><line x1="0" x2="1120" y1="1008.5" y2="1008.5" stroke="#3A2A10" stroke-opacity=".06"/><line x1="0" x2="1120" y1="1066.4" y2="1066.4" stroke="#3A2A10" stroke-opacity=".06"/><line x1="0" x2="1120" y1="1124.3" y2="1124.3" stroke="#3A2A10" stroke-opacity=".06"/><line x1="0" x2="1120" y1="1182.1" y2="1182.1" stroke="#3A2A10" stroke-opacity=".06"/><rect y="885.8" width="1120" height="7" fill="#F9F7F2"/>
+<rect x="71.4" y="117" width="316.4" height="572" rx="3" fill="#FCFBF8"/><rect x="78.4" y="124" width="302.4" height="558" fill="url(#hs)"/>
+<g clip-path="url(#hc)"><circle cx="138.9" cy="654.1" r="90.7" fill="#A9C4A0" opacity=".55"/><circle cx="305.2" cy="709.9" r="105.8" fill="#9DBB93" opacity=".5"/></g>
+<rect x="227.6" y="124" width="4" height="558" fill="#FCFBF8"/><rect x="78.4" y="358.4" width="302.4" height="4" fill="#FCFBF8"/>
+<rect x="390.8" y="108" width="56" height="776.8" rx="5" fill="#E9E1D3"/>
+<polygon points="78.4,892.8 380.8,892.8 761.6,1240 134.4,1240" fill="url(#hl)" opacity="0.8"/><ellipse cx="694.4" cy="1049" rx="403.2" ry="93.7" fill="#EEE7DB"/>
+<line x1="806.4" y1="0" x2="806.4" y2="248" stroke="#8A7A62" stroke-width="1.5"/><path d="M739.2 322.4 a67.2 74.4 0 0 1 134.4 0 Z" fill="#DCD2C1"/>
+<rect x="492.8" y="607.6" width="560" height="161.2" rx="14" fill="#E6DFD2"/>
+<rect x="484.8" y="731.6" width="576" height="124" rx="12" fill="#F0EBE2"/>
+<rect x="548.8" y="644.8" width="145.6" height="99.2" rx="10" fill="#A8B79F"/><rect x="828.8" y="644.8" width="145.6" height="99.2" rx="10" fill="#D6CCBA"/>
+<rect x="526.4" y="1003.9" width="336" height="7" rx="3" fill="#9A7654"/>
+<rect x="420" y="824" width="56" height="72.8" rx="11.2" fill="#D9CDBB"/><ellipse cx="422.8" cy="784.8" rx="22.4" ry="50.4" transform="rotate(-25 422.8 784.8)" fill="#5F8A5B"/><ellipse cx="473.2" cy="779.2" rx="22.4" ry="53.2" transform="rotate(28 473.2 779.2)" fill="#6E9A68"/><ellipse cx="448" cy="756.8" rx="19.6" ry="56" fill="#4F7A4C"/><path d="M319 981.9 L312.2 1083.76 M353 981.9 L359.8 1083.76" stroke="#2E3A37" stroke-width="27.2" stroke-linecap="round"/>
+<rect x="295.3" y="839.4" width="81.5" height="156.1" rx="33.9" fill="#0F5C4D"/><path d="M363.2 873.3 L451.4 846.2" stroke="#0F5C4D" stroke-width="30.5" stroke-linecap="round"/><rect x="437.8" y="819" width="40.7" height="30.5" rx="2" fill="#B7E36A"/>
+<path d="M305.5 873.3 L288.5 961.6" stroke="#0F5C4D" stroke-width="30.5" stroke-linecap="round"/>
+<circle cx="336" cy="798.7" r="33.9" fill="#E6C3A5"/><path d="M302.1 791.9 a33.9 33.9 0 0 1 67.9 0 Z" fill="#6B4A33"/></svg>
