@@ -33,6 +33,8 @@ export const viewport: Viewport = {
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   formatDetection: { telephone: false, email: false, address: false },
+  // Google Search Console ownership – keep after verification.
+  verification: { google: 'VH8f9maZxxxgsMtdQWQKD9lyN3Y0m8M9s9XcyCVe12s' },
 };
 
 export default async function RootLayout({ children, params }: { children: ReactNode; params: Promise<{ lang: string }> }) {

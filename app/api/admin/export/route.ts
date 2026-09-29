@@ -1,7 +1,7 @@
 import { isAdmin } from '@/lib/admin/auth';
 import { db, type RecordKind } from '@/lib/db';
 
-const KINDS: RecordKind[] = ['booking', 'contact', 'application'];
+const KINDS: RecordKind[] = ['booking', 'contact', 'application', 'admin_login'];
 
 const cell = (v: unknown) => {
   const s = Array.isArray(v) ? v.join('; ') : v == null ? '' : typeof v === 'object' ? JSON.stringify(v) : String(v);

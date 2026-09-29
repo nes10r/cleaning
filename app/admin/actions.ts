@@ -89,6 +89,7 @@ const STATUSES: Record<RecordKind, readonly string[]> = {
   booking: BOOKING_STATUSES,
   contact: INQUIRY_STATUSES,
   application: INQUIRY_STATUSES,
+  admin_login: [],
 };
 
 export async function setRecordStatusAction(form: FormData) {

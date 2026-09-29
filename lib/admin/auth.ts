@@ -2,6 +2,7 @@ import 'server-only';
 import { createHmac, timingSafeEqual } from 'node:crypto';
 import { cookies, headers } from 'next/headers';
 import { redirect } from 'next/navigation';
+import { db, newId } from '@/lib/db';
 
 /**
  * Single-password admin login.
@@ -40,11 +41,47 @@ export async function requireAdmin() {
   if (!(await isAdmin())) redirect('/admin/login');
 }
 
+export async function clientIp() {
+  const h = await headers();
+  return h.get('x-forwarded-for')?.split(',')[0]?.trim() || h.get('x-real-ip') || 'local';
+}
+
+/** Login history shown in the panel sidebar (records kind "admin_login"). */
+export interface LoginEntry {
+  ip: string;
+  userAgent: string;
+  country: string;
+  city: string;
+}
+
+const safeDecode = (s: string) => {
+  try {
+    return decodeURIComponent(s);
+  } catch {
+    return s;
+  }
+};
+
+async function logLogin(success: boolean) {
+  const h = await headers();
+  const data: LoginEntry = {
+    ip: await clientIp(),
+    userAgent: (h.get('user-agent') ?? '').slice(0, 300),
+    // Filled in by Vercel's edge network.
+    country: h.get('x-vercel-ip-country') ?? '',
+    city: safeDecode(h.get('x-vercel-ip-city') ?? ''),
+  };
+  try {
+    await db().insertRecord({ id: newId('l'), kind: 'admin_login', status: success ? 'success' : 'failed', data: { ...data } });
+  } catch (e) {
+    console.error('[admin] login log failed', e);
+  }
+}
+
 /** Brute-force guard: 8 attempts per IP per 15 minutes (per instance). */
 const attempts = new Map<string, { n: number; reset: number }>();
 async function tooManyAttempts() {
-  const h = await headers();
-  const ip = h.get('x-forwarded-for')?.split(',')[0]?.trim() || h.get('x-real-ip') || 'local';
+  const ip = await clientIp();
   const now = Date.now();
   const e = attempts.get(ip);
   if (!e || e.reset < now) {
@@ -58,7 +95,11 @@ async function tooManyAttempts() {
 export async function login(input: string): Promise<string | null> {
   if (!adminConfigured()) return 'ADMIN_PASSWORD təyin edilməyib.';
   if (await tooManyAttempts()) return 'Çox cəhd edildi. 15 dəqiqə sonra yenidən yoxlayın.';
-  if (!safeEqual(sign(input), sign(password()))) return 'Parol yanlışdır.';
+  if (!safeEqual(sign(input), sign(password()))) {
+    await logLogin(false);
+    return 'Parol yanlışdır.';
+  }
+  await logLogin(true);
   const exp = String(Math.floor(Date.now() / 1000) + MAX_AGE);
   (await cookies()).set(COOKIE, `${exp}.${sign(exp)}`, {
     httpOnly: true,

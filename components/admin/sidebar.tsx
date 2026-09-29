@@ -7,14 +7,15 @@ import { ADMIN_NAV } from '@/config/admin';
 import { logoutAction } from '@/app/admin/actions';
 import { LogoMark } from '@/components/layout/logo';
 import { Icon } from '@/components/ui/icon';
+import { LoginHistory, type LoginRow } from './login-history';
 
-export function AdminSidebar({ siteName, logoUrl, badges }: { siteName: string; logoUrl: string | null; badges: Record<string, number> }) {
+export function AdminSidebar({ siteName, logoUrl, badges, logins, currentIp }: { siteName: string; logoUrl: string | null; badges: Record<string, number>; logins: LoginRow[]; currentIp: string }) {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const isActive = (href: string) => (href === '/admin' ? pathname === href : pathname.startsWith(href));
 
   return (
-    <aside className="sticky top-0 z-30 border-b border-line bg-white lg:h-dvh lg:border-r lg:border-b-0">
+    <aside className="sticky top-0 z-30 border-b border-line bg-white lg:h-dvh lg:overflow-y-auto lg:border-r lg:border-b-0">
       <div className="flex h-14 items-center justify-between px-4 lg:h-16">
         <Link href="/admin" className="flex min-w-0 items-center gap-2 font-bold">
           {logoUrl ? (
@@ -55,7 +56,8 @@ export function AdminSidebar({ siteName, logoUrl, badges }: { siteName: string; 
             );
           })}
         </ul>
-        <div className="mt-4 grid gap-1 border-t border-line pt-4">
+        <LoginHistory logins={logins} currentIp={currentIp} />
+        <div className="mt-2 grid gap-1 border-t border-line pt-4">
           <a href="/" target="_blank" rel="noreferrer" className="flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm font-semibold text-ink-2 hover:bg-surface-2">
             <Icon name="arrowRight" size={16} /> Sayta bax
           </a>

@@ -11,7 +11,7 @@ import type { ContentKey } from '@/lib/content/types';
  * Uploaded image bytes (when Vercel Blob is not used) go to the `media_files`
  * table in Postgres, or to .data/uploads with the file store.
  */
-export type RecordKind = 'booking' | 'contact' | 'application';
+export type RecordKind = 'booking' | 'contact' | 'application' | 'admin_login';
 
 export interface DbRecord {
   id: string;

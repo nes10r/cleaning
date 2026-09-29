@@ -1,16 +1,18 @@
 import type { ReactNode } from 'react';
-import { requireAdmin } from '@/lib/admin/auth';
+import { clientIp, requireAdmin, type LoginEntry } from '@/lib/admin/auth';
 import { getContentFresh } from '@/lib/content';
 import { db, storageStatus } from '@/lib/db';
 import { AdminSidebar } from '@/components/admin/sidebar';
 
 export default async function PanelLayout({ children }: { children: ReactNode }) {
   await requireAdmin();
-  const [content, newBookings, newContacts, newApplications] = await Promise.all([
+  const [content, newBookings, newContacts, newApplications, logins, currentIp] = await Promise.all([
     getContentFresh(),
     db().countRecords('booking', 'new'),
     db().countRecords('contact', 'new'),
     db().countRecords('application', 'new'),
+    db().listRecords('admin_login', 40),
+    clientIp(),
   ]);
   const status = storageStatus();
   return (
@@ -19,6 +21,8 @@ export default async function PanelLayout({ children }: { children: ReactNode })
         siteName={content.site.name}
         logoUrl={content.site.logoUrl}
         badges={{ '/admin/sifarisler': newBookings, '/admin/sorgular': newContacts + newApplications }}
+        logins={logins.map((r) => ({ ...(r.data as unknown as LoginEntry), id: r.id, success: r.status === 'success', at: r.createdAt }))}
+        currentIp={currentIp}
       />
       <div className="min-w-0">
         {!status.writable && (
