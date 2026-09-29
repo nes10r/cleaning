@@ -1,13 +1,13 @@
 import 'server-only';
 import { del, put } from '@vercel/blob';
-import { promises as fs } from 'node:fs';
 import path from 'node:path';
-import { db, LOCAL_DATA_DIR, newId, storageStatus, type MediaItem } from '@/lib/db';
+import { db, newId, storageStatus, type MediaItem } from '@/lib/db';
 
 /**
  * Media library storage.
  *   BLOB_READ_WRITE_TOKEN set → Vercel Blob (public URLs)
- *   otherwise                 → .data/uploads, served by /api/media/<file>
+ *   otherwise                 → database (Postgres media_files, or .data/uploads
+ *                               locally), served and CDN-cached by /api/media/<file>
  */
 export const MAX_UPLOAD_BYTES = 4 * 1024 * 1024;
 
@@ -19,8 +19,6 @@ export const ALLOWED_TYPES: Record<string, string> = {
   'image/gif': 'gif',
   'image/svg+xml': 'svg',
 };
-
-export const UPLOAD_DIR = path.join(LOCAL_DATA_DIR, 'uploads');
 
 const slugify = (name: string) =>
   name
@@ -55,11 +53,9 @@ export async function uploadMedia(file: File): Promise<MediaItem> {
     const blob = await put(pathname, file, { access: 'public', contentType: file.type, addRandomSuffix: false });
     url = blob.url;
   } else {
-    // Serverless filesystems are read-only; local files only work in dev / self-hosting.
-    if (status.onVercel) throw new Error('Fayl saxlamaq üçün BLOB_READ_WRITE_TOKEN lazımdır (Vercel Blob).');
-    await fs.mkdir(UPLOAD_DIR, { recursive: true });
+    if (!status.writable) throw new Error('Fayl saxlamaq üçün DATABASE_URL və ya BLOB_READ_WRITE_TOKEN lazımdır.');
     const fileName = path.basename(pathname);
-    await fs.writeFile(path.join(UPLOAD_DIR, fileName), Buffer.from(await file.arrayBuffer()));
+    await db().putMediaFile(fileName, Buffer.from(await file.arrayBuffer()));
     url = `/api/media/${fileName}`;
   }
 
@@ -72,7 +68,7 @@ export async function deleteMedia(id: string) {
   const item = await db().getMedia(id);
   if (!item) return;
   if (item.url.startsWith('/api/media/')) {
-    await fs.rm(path.join(UPLOAD_DIR, path.basename(item.pathname)), { force: true });
+    await db().deleteMediaFile(path.basename(item.pathname));
   } else if (storageStatus().blob) {
     await del(item.url);
   }

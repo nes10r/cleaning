@@ -40,7 +40,7 @@ Prices, packages, cities, company details, the logo and images are edited in the
 | Paketlər | packages (texts LT/EN/RU, slug, icon, image, prices) and extras |
 | Qiymətlər | package/extra price tables, Sunday surcharge, multipliers, live preview |
 | Şəhərlər | cities, districts, price multiplier, SEO slugs |
-| Media | upload (Vercel Blob, or `.data/uploads` locally), usage, delete |
+| Media | upload (stored in the database, or Vercel Blob if `BLOB_READ_WRITE_TOKEN` is set), usage, delete |
 | Parametrlər | company details, logo, tagline, hours, contacts, fixed site images |
 
 Content is stored in the database (`lib/db`, Postgres via `DATABASE_URL`, otherwise `.data/db.json`); `config/*` values only seed it. Every save is validated in `lib/content/sanitize.ts` and revalidates the public site.
@@ -91,5 +91,5 @@ components/ui|layout|sections|booking|forms
 - [ ] Have a lawyer review the legal texts.
 - [ ] Connect a database, email/SMS, and real availability (`lib/booking/availability.ts`).
 - [ ] Add authentication for `/account` (`/admin` is protected by `ADMIN_PASSWORD`).
-- [ ] Set `DATABASE_URL`, `ADMIN_PASSWORD`, `ADMIN_SECRET` and `BLOB_READ_WRITE_TOKEN` on Vercel.
+- [ ] Set `DATABASE_URL`, `ADMIN_PASSWORD` and `ADMIN_SECRET` on Vercel (`BLOB_READ_WRITE_TOKEN` is optional).
 - [ ] Replace the in-memory rate limiter with a shared store (e.g. Redis) if you run more than one instance.

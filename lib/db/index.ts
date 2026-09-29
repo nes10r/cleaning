@@ -8,6 +8,8 @@ import type { ContentKey } from '@/lib/content/types';
  * Storage for editable content, bookings/inquiries and the media library.
  *   DATABASE_URL set  → Postgres (Neon). Tables are created automatically.
  *   otherwise         → JSON file in .data/ (local development only).
+ * Uploaded image bytes (when Vercel Blob is not used) go to the `media_files`
+ * table in Postgres, or to .data/uploads with the file store.
  */
 export type RecordKind = 'booking' | 'contact' | 'application';
 
@@ -42,6 +44,9 @@ export interface Db {
   addMedia(item: Omit<MediaItem, 'createdAt'>): Promise<void>;
   getMedia(id: string): Promise<MediaItem | null>;
   deleteMedia(id: string): Promise<void>;
+  putMediaFile(name: string, bytes: Buffer): Promise<void>;
+  getMediaFile(name: string): Promise<Buffer | null>;
+  deleteMediaFile(name: string): Promise<void>;
 }
 
 /* ---------------- Postgres (Neon) ---------------- */
@@ -55,6 +60,8 @@ function postgresDb(url: string): Db {
       await sql`create table if not exists records (id text primary key, kind text not null, status text not null default 'new', data jsonb not null, created_at timestamptz not null default now())`;
       await sql`create index if not exists records_kind_created on records (kind, created_at desc)`;
       await sql`create table if not exists media (id text primary key, url text not null, pathname text not null, name text not null, content_type text not null, size integer not null, created_at timestamptz not null default now())`;
+      // Base64 text keeps the HTTP driver simple; images are small.
+      await sql`create table if not exists media_files (name text primary key, data text not null)`;
     })().catch((e) => {
       ready = null;
       throw e;
@@ -131,6 +138,20 @@ function postgresDb(url: string): Db {
       await init();
       await sql`delete from media where id = ${id}`;
     },
+    async putMediaFile(name, bytes) {
+      await init();
+      await sql`insert into media_files (name, data) values (${name}, ${bytes.toString('base64')})
+                on conflict (name) do update set data = excluded.data`;
+    },
+    async getMediaFile(name) {
+      await init();
+      const rows = await sql`select data from media_files where name = ${name}`;
+      return rows[0] ? Buffer.from(String(rows[0].data), 'base64') : null;
+    },
+    async deleteMediaFile(name) {
+      await init();
+      await sql`delete from media_files where name = ${name}`;
+    },
   };
 }
 
@@ -143,6 +164,7 @@ interface FileData {
 }
 
 export const LOCAL_DATA_DIR = path.join(process.cwd(), '.data');
+export const UPLOAD_DIR = path.join(LOCAL_DATA_DIR, 'uploads');
 
 function fileDb(): Db {
   const file = path.join(LOCAL_DATA_DIR, 'db.json');
@@ -190,6 +212,12 @@ function fileDb(): Db {
     addMedia: (item) => mutate((d) => void d.media.unshift({ ...item, createdAt: new Date().toISOString() })),
     getMedia: async (id) => (await read()).media.find((m) => m.id === id) ?? null,
     deleteMedia: (id) => mutate((d) => void (d.media = d.media.filter((m) => m.id !== id))),
+    async putMediaFile(name, bytes) {
+      await fs.mkdir(UPLOAD_DIR, { recursive: true });
+      await fs.writeFile(path.join(UPLOAD_DIR, path.basename(name)), bytes);
+    },
+    getMediaFile: (name) => fs.readFile(path.join(UPLOAD_DIR, path.basename(name))).catch(() => null),
+    deleteMediaFile: (name) => fs.rm(path.join(UPLOAD_DIR, path.basename(name)), { force: true }),
   };
 }
 
@@ -207,6 +235,8 @@ export function storageStatus() {
     database: hasDb ? 'postgres' : 'file',
     writable: hasDb || !onVercel,
     blob: !!process.env.BLOB_READ_WRITE_TOKEN,
+    /** Where uploaded image bytes live. */
+    media: process.env.BLOB_READ_WRITE_TOKEN ? 'blob' : hasDb ? 'postgres' : 'file',
     onVercel,
   } as const;
 }

@@ -30,7 +30,8 @@ export default async function MediaPage() {
         description={
           <>
             Saytda istifadə olunan şəkillər. Paket, şəhər, loqo və əsas səhifə şəkilləri müvafiq bölmələrdə buradan seçilir.
-            {!status.blob && <> Fayllar lokal olaraq <code className="font-mono text-xs">.data/uploads</code> qovluğunda saxlanılır.</>}
+            {status.media === 'postgres' && <> Fayllar verilənlər bazasında (Neon) saxlanılır.</>}
+            {status.media === 'file' && <> Fayllar lokal olaraq <code className="font-mono text-xs">.data/uploads</code> qovluğunda saxlanılır.</>}
           </>
         }
       />

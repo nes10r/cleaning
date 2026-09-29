@@ -112,14 +112,14 @@ export default async function AdminHome() {
           </div>
           <div>
             <dt className="text-ink-muted">Media</dt>
-            <dd className="font-semibold">{status.blob ? 'Vercel Blob' : 'Lokal qovluq (.data/uploads)'}</dd>
+            <dd className="font-semibold">{{ blob: 'Vercel Blob', postgres: 'Verilənlər bazası (Neon)', file: 'Lokal qovluq (.data/uploads)' }[status.media]}</dd>
           </div>
           <div>
             <dt className="text-ink-muted">Yazma</dt>
             <dd className={`font-semibold ${status.writable ? 'text-success' : 'text-error'}`}>{status.writable ? 'Aktiv' : 'Mümkün deyil'}</dd>
           </div>
         </dl>
-        {status.database === 'file' && <p className="mt-3 text-xs text-ink-muted">Canlı sayt (Vercel) üçün DATABASE_URL və BLOB_READ_WRITE_TOKEN təyin edin.</p>}
+        {status.database === 'file' && <p className="mt-3 text-xs text-ink-muted">Canlı sayt (Vercel) üçün DATABASE_URL təyin edin.</p>}
       </section>
     </>
   );
