@@ -1,8 +1,8 @@
 import type { Metadata } from 'next';
-import { activeCities } from '@/config/cities';
+import { IMAGE_SLOTS } from '@/config/images';
+import { activeCities, cityOptions } from '@/lib/content/select';
 import { ROUTES } from '@/config/routes';
-import { cityOptions, getPageContext, type LangParams } from '@/lib/page';
-import { pageMetadata } from '@/lib/seo';
+import { getPageContext, metaFor, type LangParams } from '@/lib/page';
 import { Icon, type IconName } from '@/components/ui/icon';
 import { SiteImage } from '@/components/ui/site-image';
 import { RecruitmentForm } from '@/components/forms/recruitment-form';
@@ -11,12 +11,12 @@ import { Breadcrumbs } from '@/components/sections/page-header';
 const ICONS: IconName[] = ['calendar', 'mapPin', 'wallet', 'sparkles'];
 
 export async function generateMetadata({ params }: LangParams): Promise<Metadata> {
-  const { locale, dict } = await getPageContext(params);
-  return pageMetadata({ locale, path: ROUTES.careers, ...dict.meta.recruitment });
+  const ctx = await getPageContext(params);
+  return metaFor(ctx, ROUTES.careers, ctx.dict.meta.recruitment);
 }
 
 export default async function RecruitmentPage({ params }: LangParams) {
-  const { locale, dict } = await getPageContext(params);
+  const { locale, dict, content } = await getPageContext(params);
   const r = dict.recruitment;
   return (
     <>
@@ -43,7 +43,7 @@ export default async function RecruitmentPage({ params }: LangParams) {
             </a>
           </div>
           <div className="relative aspect-[3/2] overflow-hidden rounded-[28px] shadow-lg">
-            <SiteImage image="team" locale={locale} fill priority sizes="(min-width: 1024px) 560px, 100vw" className="object-cover" />
+            <SiteImage src={content.images.team} alt={IMAGE_SLOTS.team.alt[locale]} fill priority sizes="(min-width: 1024px) 560px, 100vw" className="object-cover" />
           </div>
         </div>
       </section>
@@ -72,7 +72,7 @@ export default async function RecruitmentPage({ params }: LangParams) {
             </h2>
             <p className="text-ink-2">{r.areasLead}</p>
             <ul className="grid gap-3">
-              {activeCities.map((c) => (
+              {activeCities(content).map((c) => (
                 <li key={c.key} className="rounded-2xl border border-line p-4">
                   <p className="flex items-center gap-2 font-bold">
                     <Icon name="mapPin" size={18} className="text-primary" />
@@ -83,7 +83,7 @@ export default async function RecruitmentPage({ params }: LangParams) {
               ))}
             </ul>
           </div>
-          <RecruitmentForm labels={r.form} errors={dict.booking.errors} cities={cityOptions(locale)} optional={dict.common.optional} />
+          <RecruitmentForm labels={r.form} errors={dict.booking.errors} cities={cityOptions(content, locale)} optional={dict.common.optional} />
         </div>
       </section>
     </>

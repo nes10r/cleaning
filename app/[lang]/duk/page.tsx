@@ -1,9 +1,8 @@
 import type { Metadata } from 'next';
 import { ROUTES } from '@/config/routes';
-import { site } from '@/config/site';
-import { getPageContext, type LangParams } from '@/lib/page';
+import { telHref } from '@/lib/format';
+import { getPageContext, metaFor, type LangParams } from '@/lib/page';
 import { faqSchema } from '@/lib/schema';
-import { pageMetadata } from '@/lib/seo';
 import { Icon } from '@/components/ui/icon';
 import { JsonLd } from '@/components/seo/json-ld';
 import { CtaSection } from '@/components/sections/cta-section';
@@ -11,12 +10,13 @@ import { FaqList } from '@/components/sections/faq';
 import { Breadcrumbs, PageHeader } from '@/components/sections/page-header';
 
 export async function generateMetadata({ params }: LangParams): Promise<Metadata> {
-  const { locale, dict } = await getPageContext(params);
-  return pageMetadata({ locale, path: ROUTES.faq, ...dict.meta.faq });
+  const ctx = await getPageContext(params);
+  return metaFor(ctx, ROUTES.faq, ctx.dict.meta.faq);
 }
 
 export default async function FaqPage({ params }: LangParams) {
-  const { locale, dict } = await getPageContext(params);
+  const { locale, dict, content } = await getPageContext(params);
+  const site = content.site;
   return (
     <>
       <PageHeader
@@ -38,7 +38,7 @@ export default async function FaqPage({ params }: LangParams) {
           <FaqList items={dict.faq.items} />
           <aside className="card grid content-start gap-3 self-start p-6 lg:sticky lg:top-[calc(var(--header-h)+1.5rem)]">
             <h2 className="text-lg font-bold">{dict.nav.contact}</h2>
-            <a href={site.phoneHref} className="flex min-h-11 items-center gap-2.5 font-semibold hover:text-primary">
+            <a href={telHref(site.phone)} className="flex min-h-11 items-center gap-2.5 font-semibold hover:text-primary">
               <Icon name="phone" size={18} className="text-primary" />
               {site.phone}
             </a>
@@ -46,7 +46,7 @@ export default async function FaqPage({ params }: LangParams) {
               <Icon name="mail" size={18} className="text-primary" />
               {site.email}
             </a>
-            <p className="text-sm text-ink-2">{dict.common.openingHours}</p>
+            <p className="text-sm text-ink-2">{site.hours[locale]}</p>
           </aside>
         </div>
       </section>

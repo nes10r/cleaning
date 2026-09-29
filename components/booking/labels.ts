@@ -1,12 +1,14 @@
-import type { ServiceKey } from '@/config/services';
+import type { PricingModel } from '@/lib/content/types';
 import type { Dictionary } from '@/locales/lt';
 
-/** Serializable label bundle passed from the server page to the wizard. */
+/** Serializable label + content bundle passed from the server page to the wizard. */
 export interface BookingLabels {
   booking: Dictionary['booking'];
-  extras: Dictionary['extras'];
   propertyTypes: Dictionary['propertyTypes'];
-  services: Record<ServiceKey, { name: string; short: string }>;
+  services: { key: string; name: string; short: string; icon: string; minimum: number }[];
+  extras: { key: string; name: string; hint: string; icon: string; price: number }[];
+  model: PricingModel;
+  defaultCity: string;
   common: Pick<Dictionary['common'], 'back' | 'continue' | 'optional' | 'cleaners' | 'rooms' | 'bathrooms' | 'from'>;
   duration: string;
   sundayNote: string;

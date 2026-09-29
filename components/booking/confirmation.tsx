@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { TIME_SLOTS } from '@/config/pricing';
+import { TIME_SLOTS } from '@/config/booking';
 import type { Locale } from '@/config/i18n';
 import type { BookingDraft, BookingResponse } from '@/lib/booking/types';
 import { formatLongDate, formatPrice } from '@/lib/format';
@@ -41,7 +41,7 @@ export function BookingConfirmation({ locale, draft, result, labels }: { locale:
             {[
               [r.date, draft.date ? formatLongDate(locale, draft.date) : '', slot],
               [r.address, `${draft.address}${draft.apartment ? `–${draft.apartment}` : ''}, ${city}`, draft.access],
-              [r.service, labels.services[draft.service].name, `${draft.area} m²${draft.extras.length ? ` · ${draft.extras.map((e) => labels.extras[e].name).join(', ')}` : ''}`],
+              [r.service, (labels.services.find((x) => x.key === draft.service)?.name ?? draft.service), `${draft.area} m²${draft.extras.length ? ` · ${draft.extras.map((e) => labels.extras.find((x) => x.key === e)?.name ?? e).join(', ')}` : ''}`],
               [r.price, `${formatPrice(locale, result.estimate.from)}–${formatPrice(locale, result.estimate.to)}`, r.priceNote],
             ].map(([dt, dd, sub]) => (
               <div key={dt} className="grid gap-1 py-3 sm:grid-cols-[9rem_minmax(0,1fr)] sm:gap-4">

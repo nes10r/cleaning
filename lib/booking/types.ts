@@ -1,14 +1,13 @@
-import type { ExtraKey, PropertyType, TimeSlotId } from '@/config/pricing';
-import type { ServiceKey } from '@/config/services';
+import type { PropertyType, TimeSlotId } from '@/config/booking';
 import type { Locale } from '@/config/i18n';
 
 export interface BookingDraft {
-  service: ServiceKey;
+  service: string;
   propertyType: PropertyType;
   area: number;
   rooms: number;
   bathrooms: number;
-  extras: ExtraKey[];
+  extras: string[];
   cityKey: string;
   address: string;
   /** Provider place id when chosen from autocomplete (Google/Mapbox). */

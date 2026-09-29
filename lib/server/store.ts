@@ -1,39 +1,20 @@
 import 'server-only';
-import type { BookingDraft } from '@/lib/booking/types';
 import type { Locale } from '@/config/i18n';
+import type { BookingDraft } from '@/lib/booking/types';
 
-/**
- * Persistence and notification seams. The in-memory implementations keep the
- * app fully runnable; replace them with a database (e.g. Postgres) and an
- * email/SMS provider without touching route handlers.
- */
+/** Shape of a booking as stored in the `records` table (kind = 'booking'). */
 export interface StoredBooking extends BookingDraft {
   number: string;
   locale: Locale;
   phoneE164: string;
   estimateFrom: number;
   estimateTo: number;
-  status: 'new' | 'confirmed' | 'completed' | 'cancelled';
-  createdAt: string;
+  durationHours: number;
+  cleaners: number;
 }
 
-export interface Repository<T> {
-  create(item: T): Promise<T>;
-}
-
-function memoryRepository<T>(): Repository<T> {
-  const items: T[] = [];
-  return {
-    async create(item) {
-      items.push(item);
-      return item;
-    },
-  };
-}
-
-export const bookings = memoryRepository<StoredBooking>();
-export const applications = memoryRepository<Record<string, unknown>>();
-export const messages = memoryRepository<Record<string, unknown>>();
+export const BOOKING_STATUSES = ['new', 'confirmed', 'completed', 'cancelled'] as const;
+export type BookingStatus = (typeof BOOKING_STATUSES)[number];
 
 export function newBookingNumber(now = new Date()): string {
   const yy = String(now.getFullYear()).slice(-2);

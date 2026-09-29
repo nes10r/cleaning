@@ -1,7 +1,6 @@
 import type { Metadata } from 'next';
-import { getPageContext, estimatorProps, type LangParams } from '@/lib/page';
+import { getPageContext, estimatorProps, metaFor, type LangParams } from '@/lib/page';
 import { faqSchema, localBusinessSchema } from '@/lib/schema';
-import { pageMetadata } from '@/lib/seo';
 import { JsonLd } from '@/components/seo/json-ld';
 import { BeforeAfterSection } from '@/components/sections/before-after-section';
 import { BookingEstimator } from '@/components/sections/booking-estimator';
@@ -16,30 +15,31 @@ import { Testimonials } from '@/components/sections/testimonials';
 import { TrustBenefits } from '@/components/sections/trust-benefits';
 
 export async function generateMetadata({ params }: LangParams): Promise<Metadata> {
-  const { locale, dict } = await getPageContext(params);
-  return pageMetadata({ locale, path: '/', ...dict.meta.home });
+  const ctx = await getPageContext(params);
+  return metaFor(ctx, '/', ctx.dict.meta.home);
 }
 
 export default async function HomePage({ params }: LangParams) {
-  const { locale, dict } = await getPageContext(params);
+  const ctx = await getPageContext(params);
+  const { locale, dict, content } = ctx;
   return (
     <>
-      <Hero locale={locale} dict={dict} />
+      <Hero locale={locale} dict={dict} content={content} />
       <section id="skaiciuokle" className="relative z-10 -mt-6 scroll-mt-(--header-h) lg:-mt-28" aria-labelledby="skaiciuokle-title">
         <div className="container-x">
-          <BookingEstimator {...estimatorProps(locale, dict)} />
+          <BookingEstimator {...estimatorProps(ctx)} />
         </div>
       </section>
-      <ServicesSection locale={locale} dict={dict} />
+      <ServicesSection locale={locale} dict={dict} content={content} />
       <HowItWorks dict={dict} />
       <TrustBenefits dict={dict} />
-      <BeforeAfterSection locale={locale} dict={dict} />
-      <Pricing locale={locale} dict={dict} />
-      <Testimonials dict={dict} />
-      <CityCoverage locale={locale} dict={dict} />
-      <Faq locale={locale} dict={dict} showMore />
+      <BeforeAfterSection locale={locale} dict={dict} content={content} />
+      <Pricing locale={locale} dict={dict} content={content} />
+      <Testimonials locale={locale} dict={dict} content={content} />
+      <CityCoverage locale={locale} dict={dict} content={content} />
+      <Faq locale={locale} dict={dict} content={content} showMore />
       <CtaSection locale={locale} dict={dict} calcHref="#skaiciuokle" />
-      <JsonLd data={[localBusinessSchema(locale, dict.meta.home.description), faqSchema(dict.faq.items)]} />
+      <JsonLd data={[localBusinessSchema(locale, dict.meta.home.description, content), faqSchema(dict.faq.items)]} />
     </>
   );
 }

@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { ROUTES } from '@/config/routes';
-import { getPageContext, type LangParams } from '@/lib/page';
-import { pageMetadata } from '@/lib/seo';
+import { getPageContext, metaFor, type LangParams } from '@/lib/page';
+import { IMAGE_SLOTS } from '@/config/images';
 import { Icon, type IconName } from '@/components/ui/icon';
 import { SiteImage } from '@/components/ui/site-image';
 import { CityCoverage } from '@/components/sections/city-coverage';
@@ -12,12 +12,12 @@ import { TrustBenefits } from '@/components/sections/trust-benefits';
 const VALUE_ICONS: IconName[] = ['receipt', 'users', 'award'];
 
 export async function generateMetadata({ params }: LangParams): Promise<Metadata> {
-  const { locale, dict } = await getPageContext(params);
-  return pageMetadata({ locale, path: ROUTES.about, ...dict.meta.about });
+  const ctx = await getPageContext(params);
+  return metaFor(ctx, ROUTES.about, ctx.dict.meta.about);
 }
 
 export default async function AboutPage({ params }: LangParams) {
-  const { locale, dict } = await getPageContext(params);
+  const { locale, dict, content } = await getPageContext(params);
   const a = dict.about;
   return (
     <>
@@ -41,7 +41,7 @@ export default async function AboutPage({ params }: LangParams) {
             ))}
           </div>
           <div className="relative aspect-[3/2] overflow-hidden rounded-[28px] shadow-lg">
-            <SiteImage image="team" locale={locale} fill priority sizes="(min-width: 1024px) 560px, 100vw" className="object-cover" />
+            <SiteImage src={content.images.team} alt={IMAGE_SLOTS.team.alt[locale]} fill priority sizes="(min-width: 1024px) 560px, 100vw" className="object-cover" />
           </div>
         </div>
       </section>
@@ -64,7 +64,7 @@ export default async function AboutPage({ params }: LangParams) {
         </div>
       </section>
       <TrustBenefits dict={dict} />
-      <CityCoverage locale={locale} dict={dict} />
+      <CityCoverage locale={locale} dict={dict} content={content} />
       <CtaSection locale={locale} dict={dict} />
     </>
   );

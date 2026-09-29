@@ -3,8 +3,7 @@
 import Link from 'next/link';
 import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import type { Locale } from '@/config/i18n';
-import { PRICING, TIME_SLOTS, extraKeys, propertyTypes, type TimeSlotId } from '@/config/pricing';
-import { serviceList, services } from '@/config/services';
+import { BATHROOMS, ROOMS, TIME_SLOTS, propertyTypes, type TimeSlotId } from '@/config/booking';
 import { getSlotsForDate } from '@/lib/booking/availability';
 import type { BookingDraft, BookingField, BookingResponse } from '@/lib/booking/types';
 import { validateField, validateStep } from '@/lib/booking/validation';
@@ -21,12 +20,26 @@ import { BookingSummary } from './summary';
 
 const TOTAL = 7;
 const PROPERTY_ICONS: Record<string, IconName> = { apartment: 'building', house: 'house', office: 'briefcase' };
-const EXTRA_ICONS: Record<string, IconName> = { windows: 'appWindow', oven: 'oven', fridge: 'fridge', balcony: 'fence', furniture: 'sofa' };
 const fid = (f: string) => `bk-${f}`;
 
 export function BookingWizard({ locale, labels, params }: { locale: Locale; labels: BookingLabels; params: BookingParams }) {
   const b = labels.booking;
-  const initial = useMemo(() => draftFromParams(params), [params]);
+  const model = labels.model;
+  const A = model.settings.area;
+  const rules = useMemo(() => ({ area: { min: A.min, max: A.max } }), [A.min, A.max]);
+  const draftOptions = useMemo(
+    () => ({
+      services: labels.services.map((s) => s.key),
+      cities: labels.cities.map((c) => c.key),
+      extras: labels.extras.map((e) => e.key),
+      area: A,
+      defaultCity: labels.defaultCity,
+    }),
+    [labels.services, labels.cities, labels.extras, labels.defaultCity, A],
+  );
+  const initial = useMemo(() => draftFromParams(params, draftOptions), [params, draftOptions]);
+  const svcName = (key: string) => labels.services.find((s) => s.key === key)?.name ?? key;
+  const extraName = (key: string) => labels.extras.find((e) => e.key === key)?.name ?? key;
   const [draft, setDraft] = useState<BookingDraft>(initial.draft);
   const [step, setStep] = useState(initial.step);
   const [dir, setDir] = useState<1 | -1>(1);
@@ -44,12 +57,12 @@ export function BookingWizard({ locale, labels, params }: { locale: Locale; labe
   // Restore a saved draft unless the user arrived with estimator values.
   useEffect(() => {
     if (initial.fromParams) return;
-    const saved = loadDraft();
+    const saved = loadDraft(draftOptions);
     if (saved) {
       setDraft(saved.draft);
       setStep(saved.step);
     }
-  }, [initial.fromParams]);
+  }, [initial.fromParams, draftOptions]);
 
   // Persist (debounced) after the user changes something.
   useEffect(() => {
@@ -64,8 +77,8 @@ export function BookingWizard({ locale, labels, params }: { locale: Locale; labe
 
   // Clear errors as soon as the field becomes valid.
   useEffect(() => {
-    setErrors((prev) => (prev.size ? new Set([...prev].filter((f) => !validateField(f, draft))) : prev));
-  }, [draft]);
+    setErrors((prev) => (prev.size ? new Set([...prev].filter((f) => !validateField(f, draft, rules))) : prev));
+  }, [draft, rules]);
 
   // Move focus to the new step heading (not on first load).
   useEffect(() => {
@@ -78,7 +91,7 @@ export function BookingWizard({ locale, labels, params }: { locale: Locale; labe
 
   const estimate = useMemo(
     () =>
-      calculateEstimate({
+      calculateEstimate(model, {
         service: draft.service,
         area: draft.area,
         cityKey: draft.cityKey,
@@ -87,7 +100,7 @@ export function BookingWizard({ locale, labels, params }: { locale: Locale; labe
         bathrooms: draft.bathrooms,
         date: draft.date,
       }),
-    [draft],
+    [model, draft],
   );
 
   const update = (patch: Partial<BookingDraft>) => {
@@ -135,7 +148,7 @@ export function BookingWizard({ locale, labels, params }: { locale: Locale; labe
   };
 
   const next = () => {
-    const bad = validateStep(step, draft);
+    const bad = validateStep(step, draft, rules);
     if (bad.length) {
       setErrors(new Set(bad));
       requestAnimationFrame(() => document.getElementById(fid(bad[0]))?.focus());
@@ -181,7 +194,7 @@ export function BookingWizard({ locale, labels, params }: { locale: Locale; labe
       <fieldset>
         <legend className="sr-only">{b.service.title}</legend>
         <div className="grid gap-3">
-          {serviceList.map((s) => (
+          {labels.services.map((s) => (
             <label key={s.key} className="option">
               <input
                 type="radio"
@@ -193,7 +206,7 @@ export function BookingWizard({ locale, labels, params }: { locale: Locale; labe
                   update({
                     service: s.key,
                     propertyType: s.key === 'office' ? 'office' : draft.propertyType === 'office' ? 'apartment' : draft.propertyType,
-                    extras: allowedExtras(s.key, draft.extras),
+                    extras: allowedExtras(model, s.key, draft.extras),
                   })
                 }
               />
@@ -201,11 +214,11 @@ export function BookingWizard({ locale, labels, params }: { locale: Locale; labe
                 <Icon name={s.icon} size={24} />
               </span>
               <span className="min-w-0 flex-1">
-                <span className="block font-semibold">{labels.services[s.key].name}</span>
-                <span className="mt-0.5 block text-sm leading-snug text-ink-2">{labels.services[s.key].short}</span>
+                <span className="block font-semibold">{s.name}</span>
+                <span className="mt-0.5 block text-sm leading-snug text-ink-2">{s.short}</span>
               </span>
               <span className="hidden text-sm font-semibold whitespace-nowrap text-ink-2 sm:block">
-                {labels.common.from} <b className="text-ink tabular-nums">{formatPrice(locale, startingPrice(s.key, draft.cityKey))}</b>
+                {labels.common.from} <b className="text-ink tabular-nums">{formatPrice(locale, startingPrice(model, s.key, draft.cityKey))}</b>
               </span>
               <span className="option-check">
                 <Icon name="check" size={14} strokeWidth={3} />
@@ -254,15 +267,15 @@ export function BookingWizard({ locale, labels, params }: { locale: Locale; labe
               <input
                 type="range"
                 className="range"
-                min={PRICING.area.min}
+                min={A.min}
                 max={250}
-                value={Math.min(Math.max(draft.area || PRICING.area.min, PRICING.area.min), 250)}
+                value={Math.min(Math.max(draft.area || A.min, A.min), 250)}
                 onChange={(e) => update({ area: Number(e.target.value) })}
                 aria-label={b.property.area}
-                style={{ ['--p' as string]: `${((Math.min(Math.max(draft.area || PRICING.area.min, PRICING.area.min), 250) - PRICING.area.min) / (250 - PRICING.area.min)) * 100}%` }}
+                style={{ ['--p' as string]: `${((Math.min(Math.max(draft.area || A.min, A.min), 250) - A.min) / (250 - A.min)) * 100}%` }}
               />
               <div className="-mt-1 flex justify-between text-xs font-medium text-ink-2">
-                <span>{PRICING.area.min} m²</span>
+                <span>{A.min} m²</span>
                 <span>250+ m²</span>
               </div>
             </div>
@@ -270,11 +283,11 @@ export function BookingWizard({ locale, labels, params }: { locale: Locale; labe
           <span id={`${fid('area')}-help`} className="help">
             {b.property.areaHelp}
           </span>
-          {errMsg('area', t(b.errors.area, { min: PRICING.area.min, max: PRICING.area.max }))}
+          {errMsg('area', t(b.errors.area, { min: A.min, max: A.max }))}
         </div>
         <div className="grid gap-6 sm:grid-cols-2">
-          <Stepper id="rooms" label={b.property.rooms} value={draft.rooms} min={PRICING.rooms.min} max={PRICING.rooms.max} onChange={(v) => update({ rooms: v })} less={b.property.less} more={b.property.more} />
-          <Stepper id="bathrooms" label={b.property.bathrooms} value={draft.bathrooms} min={PRICING.bathrooms.min} max={PRICING.bathrooms.max} onChange={(v) => update({ bathrooms: v })} less={b.property.less} more={b.property.more} />
+          <Stepper id="rooms" label={b.property.rooms} value={draft.rooms} min={ROOMS.min} max={ROOMS.max} onChange={(v) => update({ rooms: v })} less={b.property.less} more={b.property.more} />
+          <Stepper id="bathrooms" label={b.property.bathrooms} value={draft.bathrooms} min={BATHROOMS.min} max={BATHROOMS.max} onChange={(v) => update({ bathrooms: v })} less={b.property.less} more={b.property.more} />
         </div>
       </>
     ),
@@ -282,9 +295,9 @@ export function BookingWizard({ locale, labels, params }: { locale: Locale; labe
       <fieldset>
         <legend className="sr-only">{b.extras.title}</legend>
         <div className="grid gap-3 sm:grid-cols-2">
-          {extraKeys
-            .filter((e) => !services[draft.service].excludedExtras.includes(e))
-            .map((e) => (
+          {labels.extras
+            .filter((x) => !(model.services.find((m) => m.key === draft.service)?.excludedExtras ?? []).includes(x.key))
+            .map(({ key: e, name, hint, icon, price }) => (
               <label key={e} className="option py-3.5">
                 <input
                   type="checkbox"
@@ -293,13 +306,13 @@ export function BookingWizard({ locale, labels, params }: { locale: Locale; labe
                   onChange={() => update({ extras: draft.extras.includes(e) ? draft.extras.filter((x) => x !== e) : [...draft.extras, e] })}
                 />
                 <span className="option-icon size-10">
-                  <Icon name={EXTRA_ICONS[e]} />
+                  <Icon name={icon} />
                 </span>
                 <span className="min-w-0">
                   <span className="block font-semibold">
-                    {labels.extras[e].name} <span className="text-primary tabular-nums">+{formatPrice(locale, PRICING.extras[e].price)}</span>
+                    {name} <span className="text-primary tabular-nums">+{formatPrice(locale, price)}</span>
                   </span>
-                  <span className="block text-sm text-ink-2">{labels.extras[e].hint}</span>
+                  <span className="block text-sm text-ink-2">{hint}</span>
                 </span>
                 <span className="option-check is-square">
                   <Icon name="check" size={14} strokeWidth={3} />
@@ -466,9 +479,9 @@ export function BookingWizard({ locale, labels, params }: { locale: Locale; labe
       <>
         <dl className="divide-y divide-line rounded-2xl border border-line">
           {[
-            { label: b.review.service, value: labels.services[draft.service].name, sub: undefined, go: 1 },
+            { label: b.review.service, value: svcName(draft.service), sub: undefined, go: 1 },
             { label: b.review.property, value: `${labels.propertyTypes[draft.propertyType]}, ${draft.area} m²`, sub: `${plural(locale, draft.rooms, labels.common.rooms)} · ${plural(locale, draft.bathrooms, labels.common.bathrooms)}`, go: 2 },
-            { label: b.review.extras, value: draft.extras.length ? draft.extras.map((e) => labels.extras[e].name).join(', ') : b.review.none, sub: undefined, go: 3 },
+            { label: b.review.extras, value: draft.extras.length ? draft.extras.map(extraName).join(', ') : b.review.none, sub: undefined, go: 3 },
             { label: b.review.address, value: `${draft.address}${draft.apartment ? `–${draft.apartment}` : ''}, ${labels.cities.find((c) => c.key === draft.cityKey)?.name ?? ''}`, sub: draft.access || undefined, go: 4 },
             { label: b.review.date, value: draft.date ? formatLongDate(locale, draft.date) : '', sub: TIME_SLOTS.find((s) => s.id === draft.slot)?.label, go: 5 },
             { label: b.review.contact, value: `${draft.firstName} ${draft.lastName}`, sub: `${draft.email} · +370 ${draft.phone.replace(/^(\+?370|8)\s*/, '')}`, go: 6 },

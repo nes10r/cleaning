@@ -2,9 +2,9 @@ import type { Metadata, Viewport } from 'next';
 import { Manrope } from 'next/font/google';
 import type { ReactNode } from 'react';
 import { locales } from '@/config/i18n';
-import { PRICING } from '@/config/pricing';
 import { ROUTES } from '@/config/routes';
-import { site } from '@/config/site';
+import { SITE_URL } from '@/config/site';
+import { minActivePrice } from '@/lib/content/select';
 import { formatPrice } from '@/lib/format';
 import { localizePath, t } from '@/lib/i18n';
 import { getPageContext } from '@/lib/page';
@@ -31,14 +31,13 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  metadataBase: new URL(site.url),
-  applicationName: site.name,
+  metadataBase: new URL(SITE_URL),
   formatDetection: { telephone: false, email: false, address: false },
 };
 
 export default async function RootLayout({ children, params }: { children: ReactNode; params: Promise<{ lang: string }> }) {
-  const { locale, dict } = await getPageContext(params);
-  const minPrice = Math.min(...Object.values(PRICING.services).map((s) => s.minimum));
+  const { locale, dict, content } = await getPageContext(params);
+  const minPrice = minActivePrice(content);
 
   return (
     <html lang={locale} className={manrope.variable}>
@@ -46,11 +45,11 @@ export default async function RootLayout({ children, params }: { children: React
         <a href="#main" className="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-[100] focus:rounded-xl focus:bg-white focus:px-4 focus:py-3 focus:font-semibold focus:shadow-lg">
           {dict.common.skipToContent}
         </a>
-        <Header locale={locale} dict={dict} />
+        <Header locale={locale} dict={dict} content={content} />
         <main id="main" tabIndex={-1} className="outline-none">
           {children}
         </main>
-        <Footer locale={locale} dict={dict} />
+        <Footer locale={locale} dict={dict} content={content} />
         <StickyCta href={localizePath(locale, ROUTES.booking)} label={dict.common.bookCta} note={t(dict.sticky.from, { price: formatPrice(locale, minPrice) })} />
         <CookieConsent
           policyHref={localizePath(locale, ROUTES.cookies)}

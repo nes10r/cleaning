@@ -1,20 +1,22 @@
 import type { Metadata } from 'next';
 import { ROUTES } from '@/config/routes';
-import { serviceList } from '@/config/services';
-import { getPageContext, type LangParams } from '@/lib/page';
-import { pageMetadata } from '@/lib/seo';
+import { activeServices, minActivePrice } from '@/lib/content/select';
+import { formatPrice } from '@/lib/format';
+import { t } from '@/lib/i18n';
+import { getPageContext, metaFor, type LangParams } from '@/lib/page';
 import { CtaSection } from '@/components/sections/cta-section';
 import { HowItWorks } from '@/components/sections/how-it-works';
 import { Breadcrumbs, PageHeader } from '@/components/sections/page-header';
 import { ServiceCard } from '@/components/sections/services-section';
 
 export async function generateMetadata({ params }: LangParams): Promise<Metadata> {
-  const { locale, dict } = await getPageContext(params);
-  return pageMetadata({ locale, path: ROUTES.services, ...dict.meta.services });
+  const ctx = await getPageContext(params);
+  const m = ctx.dict.meta.services;
+  return metaFor(ctx, ROUTES.services, { title: m.title, description: t(m.description, { price: formatPrice(ctx.locale, minActivePrice(ctx.content)) }) });
 }
 
 export default async function ServicesPage({ params }: LangParams) {
-  const { locale, dict } = await getPageContext(params);
+  const { locale, dict, content } = await getPageContext(params);
   return (
     <>
       <PageHeader
@@ -33,8 +35,8 @@ export default async function ServicesPage({ params }: LangParams) {
       />
       <section className="pb-8" aria-label={dict.nav.services}>
         <div className="container-x grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-          {serviceList.map((s) => (
-            <ServiceCard key={s.key} service={s} locale={locale} dict={dict} headingLevel="h2" />
+          {activeServices(content).map((s) => (
+            <ServiceCard key={s.key} service={s} locale={locale} dict={dict} content={content} headingLevel="h2" />
           ))}
         </div>
       </section>

@@ -2,16 +2,17 @@ import type { Metadata } from 'next';
 import type { Locale } from '@/config/i18n';
 import type { Dictionary } from '@/lib/dictionary';
 import { formatLongDate } from '@/lib/format';
-import { pageMetadata } from '@/lib/seo';
-import { legalDocs, type LegalDocKey } from '@/locales/legal';
+import { metaFor, type PageContext } from '@/lib/page';
+import type { Content } from '@/lib/content/types';
+import { getLegalDoc, type LegalDocKey } from '@/locales/legal';
 import { Breadcrumbs } from './page-header';
 
-export function legalMetadata(locale: Locale, dict: Dictionary, key: LegalDocKey, path: string): Metadata {
-  return pageMetadata({ locale, path, ...dict.meta[key] });
+export function legalMetadata(ctx: PageContext, key: LegalDocKey, path: string): Metadata {
+  return metaFor(ctx, path, ctx.dict.meta[key]);
 }
 
-export function LegalPage({ locale, dict, docKey, path }: { locale: Locale; dict: Dictionary; docKey: LegalDocKey; path: string }) {
-  const doc = legalDocs[locale][docKey];
+export function LegalPage({ locale, dict, content, docKey, path }: { locale: Locale; dict: Dictionary; content: Content; docKey: LegalDocKey; path: string }) {
+  const doc = getLegalDoc(locale, docKey, content.site);
   return (
     <article className="container-x grid gap-10 pt-8 pb-20 lg:grid-cols-[15rem_minmax(0,1fr)] lg:gap-16 lg:pt-12">
       <div className="grid content-start gap-4 lg:col-span-2">

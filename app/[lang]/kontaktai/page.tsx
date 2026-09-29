@@ -1,27 +1,27 @@
 import type { Metadata } from 'next';
 import { ROUTES } from '@/config/routes';
-import { site } from '@/config/site';
-import { getPageContext, type LangParams } from '@/lib/page';
+import { telHref } from '@/lib/format';
+import { getPageContext, metaFor, type LangParams } from '@/lib/page';
 import { localBusinessSchema } from '@/lib/schema';
-import { pageMetadata } from '@/lib/seo';
 import { Icon, type IconName } from '@/components/ui/icon';
 import { JsonLd } from '@/components/seo/json-ld';
 import { ContactForm } from '@/components/forms/contact-form';
 import { Breadcrumbs, PageHeader } from '@/components/sections/page-header';
 
 export async function generateMetadata({ params }: LangParams): Promise<Metadata> {
-  const { locale, dict } = await getPageContext(params);
-  return pageMetadata({ locale, path: ROUTES.contact, ...dict.meta.contact });
+  const ctx = await getPageContext(params);
+  return metaFor(ctx, ROUTES.contact, ctx.dict.meta.contact);
 }
 
 export default async function ContactPage({ params }: LangParams) {
-  const { locale, dict } = await getPageContext(params);
+  const { locale, dict, content } = await getPageContext(params);
+  const site = content.site;
   const c = dict.contact;
   const rows: { icon: IconName; label: string; value: string; href?: string }[] = [
-    { icon: 'phone', label: c.phone, value: site.phone, href: site.phoneHref },
+    { icon: 'phone', label: c.phone, value: site.phone, href: telHref(site.phone) },
     { icon: 'mail', label: c.email, value: site.email, href: `mailto:${site.email}` },
     { icon: 'mapPin', label: c.address, value: `${site.address.street}, ${site.address.postalCode} ${site.address.city}` },
-    { icon: 'clock', label: c.hours, value: dict.common.openingHours },
+    { icon: 'clock', label: c.hours, value: site.hours[locale] },
   ];
   return (
     <>
@@ -85,7 +85,7 @@ export default async function ContactPage({ params }: LangParams) {
           <ContactForm labels={c.form} emailError={dict.booking.errors.email} submitError={dict.booking.errors.submit} optional={dict.common.optional} />
         </div>
       </section>
-      <JsonLd data={localBusinessSchema(locale, dict.meta.contact.description)} />
+      <JsonLd data={localBusinessSchema(locale, dict.meta.contact.description, content)} />
     </>
   );
 }

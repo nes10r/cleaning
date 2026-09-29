@@ -3,8 +3,8 @@
 import Link from 'next/link';
 import { useEffect, useId, useMemo, useState } from 'react';
 import type { Locale } from '@/config/i18n';
-import { PRICING, TIME_SLOTS, extraKeys, type ExtraKey } from '@/config/pricing';
-import { estimatorServices, services, type ServiceKey } from '@/config/services';
+import { TIME_SLOTS } from '@/config/booking';
+import type { PricingModel } from '@/lib/content/types';
 import type { Dictionary } from '@/locales/lt';
 import { bookingWindow, getSlotsForDate } from '@/lib/booking/availability';
 import { formatHours, formatPrice } from '@/lib/format';
@@ -16,13 +16,14 @@ export interface EstimatorProps {
   locale: Locale;
   bookingPath: string;
   labels: Dictionary['estimator'];
-  extrasLabels: Dictionary['extras'];
-  serviceNames: Record<ServiceKey, string>;
+  model: PricingModel;
+  services: { key: string; name: string }[];
+  extras: { key: string; name: string; price: number }[];
   cleanersForms: PluralForms;
   optionalLabel: string;
   cities: { key: string; name: string }[];
   defaultCity?: string;
-  defaultService?: ServiceKey;
+  defaultService?: string;
   /** Render the title inside the card (homepage) or rely on the page heading. */
   showHeading?: boolean;
 }
@@ -31,21 +32,23 @@ export function BookingEstimator({
   locale,
   bookingPath,
   labels: L,
-  extrasLabels,
-  serviceNames,
+  model,
+  services,
+  extras: extraOptions,
   cleanersForms,
   optionalLabel,
   cities,
   defaultCity,
-  defaultService = 'regular',
+  defaultService,
   showHeading = true,
 }: EstimatorProps) {
   const uid = useId();
   const id = (s: string) => `${uid}-${s}`;
   const [city, setCity] = useState(defaultCity ?? cities[0]?.key ?? 'vilnius');
-  const [service, setService] = useState<ServiceKey>(defaultService);
-  const [areaInput, setAreaInput] = useState(String(PRICING.area.default));
-  const [extras, setExtras] = useState<ExtraKey[]>([]);
+  const A = model.settings.area;
+  const [service, setService] = useState(defaultService && services.some((s) => s.key === defaultService) ? defaultService : (services[0]?.key ?? ''));
+  const [areaInput, setAreaInput] = useState(String(A.default));
+  const [extras, setExtras] = useState<string[]>([]);
   const [date, setDate] = useState('');
   const [slot, setSlot] = useState('');
   const [dates, setDates] = useState<{ min: string; max: string } | null>(null);
@@ -53,24 +56,24 @@ export function BookingEstimator({
   useEffect(() => setDates(bookingWindow()), []);
 
   const area = Number(areaInput.replace(',', '.'));
-  const areaValid = Number.isFinite(area) && area >= PRICING.area.min && area <= PRICING.area.max;
-  const usable = allowedExtras(service, extras);
+  const areaValid = Number.isFinite(area) && area >= A.min && area <= A.max;
+  const usable = allowedExtras(model, service, extras);
   const estimate = useMemo(
-    () => calculateEstimate({ service, area: areaValid ? area : PRICING.area.default, cityKey: city, extras: usable, date: date || null }),
-    [service, area, areaValid, city, usable, date],
+    () => calculateEstimate(model, { service, area: areaValid ? area : A.default, cityKey: city, extras: usable, date: date || null }),
+    [model, service, area, areaValid, A.default, city, usable, date],
   );
   const slots = date ? getSlotsForDate(date) : TIME_SLOTS.map((s) => s.id);
-  const rangePct = ((Math.min(Math.max(areaValid ? area : PRICING.area.default, PRICING.area.min), 200) - PRICING.area.min) / (200 - PRICING.area.min)) * 100;
+  const rangePct = ((Math.min(Math.max(areaValid ? area : A.default, A.min), 200) - A.min) / (200 - A.min)) * 100;
 
   const bookingHref = useMemo(() => {
-    const q = new URLSearchParams({ service, city, area: String(areaValid ? Math.round(area) : PRICING.area.default) });
+    const q = new URLSearchParams({ service, city, area: String(areaValid ? Math.round(area) : A.default) });
     if (usable.length) q.set('extras', usable.join(','));
     if (date) q.set('date', date);
     if (slot && date && slots.includes(slot as never)) q.set('slot', slot);
     return `${bookingPath}?${q}`;
-  }, [bookingPath, service, city, area, areaValid, usable, date, slot, slots]);
+  }, [bookingPath, service, city, area, areaValid, A.default, usable, date, slot, slots]);
 
-  const toggleExtra = (e: ExtraKey) => setExtras((cur) => (cur.includes(e) ? cur.filter((x) => x !== e) : [...cur, e]));
+  const toggleExtra = (e: string) => setExtras((cur) => (cur.includes(e) ? cur.filter((x) => x !== e) : [...cur, e]));
   const price = formatPrice(locale, estimate.from);
 
   return (
@@ -105,10 +108,10 @@ export function BookingEstimator({
             <label className="label" htmlFor={id('service')}>
               {L.service}
             </label>
-            <select id={id('service')} className="input" value={service} onChange={(e) => setService(e.target.value as ServiceKey)}>
-              {estimatorServices.map((s) => (
+            <select id={id('service')} className="input" value={service} onChange={(e) => setService(e.target.value)}>
+              {services.map((s) => (
                 <option key={s.key} value={s.key}>
-                  {serviceNames[s.key]}
+                  {s.name}
                 </option>
               ))}
             </select>
@@ -135,16 +138,16 @@ export function BookingEstimator({
                 <input
                   type="range"
                   className="range"
-                  min={PRICING.area.min}
+                  min={A.min}
                   max={200}
                   step={1}
-                  value={Math.min(areaValid ? area : PRICING.area.default, 200)}
+                  value={Math.min(areaValid ? area : A.default, 200)}
                   onChange={(e) => setAreaInput(e.target.value)}
                   aria-label={L.areaSlider}
                   style={{ ['--p' as string]: `${rangePct}%` }}
                 />
                 <div className="-mt-1 flex justify-between text-xs font-medium text-ink-2 tabular-nums">
-                  <span>{PRICING.area.min} m²</span>
+                  <span>{A.min} m²</span>
                   <span>200+ m²</span>
                 </div>
               </div>
@@ -154,20 +157,20 @@ export function BookingEstimator({
             </span>
             <p id={id('area-err')} className="error-text" role="alert" hidden={areaValid}>
               <Icon name="alert" size={16} />
-              {t(L.areaError, { min: PRICING.area.min, max: PRICING.area.max })}
+              {t(L.areaError, { min: A.min, max: A.max })}
             </p>
           </div>
 
           <fieldset className="field sm:col-span-2">
             <legend className="label mb-1">{L.extras}</legend>
             <div className="grid gap-x-6 sm:grid-cols-2">
-              {extraKeys.map((e) => {
-                const disabled = services[service].excludedExtras.includes(e);
+              {extraOptions.map(({ key: e, name, price: extraPrice }) => {
+                const disabled = model.services.find((x) => x.key === service)?.excludedExtras.includes(e) ?? false;
                 return (
                   <label key={e} className={`check-row ${disabled ? 'pointer-events-none opacity-45' : ''}`}>
                     <input type="checkbox" className="checkbox" checked={usable.includes(e)} disabled={disabled} onChange={() => toggleExtra(e)} />
-                    <span className="flex-1">{extrasLabels[e].name}</span>
-                    <span className="text-sm font-semibold text-ink-2 tabular-nums">+{formatPrice(locale, PRICING.extras[e].price)}</span>
+                    <span className="flex-1">{name}</span>
+                    <span className="text-sm font-semibold text-ink-2 tabular-nums">+{formatPrice(locale, extraPrice)}</span>
                   </label>
                 );
               })}

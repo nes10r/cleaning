@@ -1,5 +1,6 @@
 import type { Locale } from '@/config/i18n';
-import { site } from '@/config/site';
+import { POLICY } from '@/config/site';
+import type { SiteSettings } from '@/lib/content/types';
 
 /**
  * Legal documents. These are starting templates written for a Lithuanian
@@ -14,10 +15,15 @@ export interface LegalDoc {
 }
 
 const UPDATED = '2026-09-26';
-const g = site.policy.guaranteeHours;
-const c = site.policy.freeCancellationHours;
+const g = POLICY.guaranteeHours;
+const c = POLICY.freeCancellationHours;
 
-export const legalDocs: Record<Locale, Record<LegalDocKey, LegalDoc>> = {
+/** Legal texts filled in with the admin-managed company details. */
+export function getLegalDoc(locale: Locale, key: LegalDocKey, site: SiteSettings): LegalDoc {
+  return legalDocs(site)[locale][key];
+}
+
+const legalDocs = (site: SiteSettings): Record<Locale, Record<LegalDocKey, LegalDoc>> => ({
   lt: {
     privacy: {
       title: 'Privatumo politika',
@@ -138,4 +144,4 @@ export const legalDocs: Record<Locale, Record<LegalDocKey, LegalDoc>> = {
       ],
     },
   },
-};
+});

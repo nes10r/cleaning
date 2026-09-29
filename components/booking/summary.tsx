@@ -1,5 +1,4 @@
-import { TIME_SLOTS } from '@/config/pricing';
-import { services } from '@/config/services';
+import { TIME_SLOTS } from '@/config/booking';
 import type { Locale } from '@/config/i18n';
 import type { BookingDraft } from '@/lib/booking/types';
 import { formatHours, formatPrice, formatShortDate } from '@/lib/format';
@@ -12,15 +11,16 @@ export function BookingSummary({ locale, draft, estimate, labels }: { locale: Lo
   const b = labels.booking;
   const city = labels.cities.find((c) => c.key === draft.cityKey)?.name ?? '';
   const slot = TIME_SLOTS.find((s) => s.id === draft.slot)?.label;
+  const svc = labels.services.find((s) => s.key === draft.service);
   const rows = [
     {
-      icon: services[draft.service].icon,
-      main: labels.services[draft.service].name,
+      icon: svc?.icon ?? 'sparkles',
+      main: svc?.name ?? draft.service,
       sub: `${labels.propertyTypes[draft.propertyType]} · ${draft.area} m² · ${plural(locale, draft.rooms, labels.common.rooms)}`,
     },
     {
       icon: 'plus' as const,
-      main: draft.extras.length ? draft.extras.map((e) => labels.extras[e].name).join(', ') : b.review.none,
+      main: draft.extras.length ? draft.extras.map((e) => labels.extras.find((x) => x.key === e)?.name ?? e).join(', ') : b.review.none,
       sub: undefined,
       muted: !draft.extras.length,
     },

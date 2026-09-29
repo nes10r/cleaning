@@ -1,8 +1,9 @@
 import type { Metadata } from 'next';
 import { ROUTES } from '@/config/routes';
-import { estimatorProps, getPageContext, type LangParams } from '@/lib/page';
+import { activeCities } from '@/lib/content/select';
+import { t } from '@/lib/i18n';
+import { estimatorProps, getPageContext, metaFor, type LangParams } from '@/lib/page';
 import { faqSchema } from '@/lib/schema';
-import { pageMetadata } from '@/lib/seo';
 import { Icon } from '@/components/ui/icon';
 import { JsonLd } from '@/components/seo/json-ld';
 import { BookingEstimator } from '@/components/sections/booking-estimator';
@@ -12,14 +13,22 @@ import { Breadcrumbs, PageHeader } from '@/components/sections/page-header';
 import { ExtrasPriceList, PriceCards } from '@/components/sections/pricing';
 
 export async function generateMetadata({ params }: LangParams): Promise<Metadata> {
-  const { locale, dict } = await getPageContext(params);
-  return pageMetadata({ locale, path: ROUTES.pricing, ...dict.meta.pricing });
+  const ctx = await getPageContext(params);
+  return metaFor(ctx, ROUTES.pricing, ctx.dict.meta.pricing);
 }
 
 export default async function PricingPage({ params }: LangParams) {
-  const { locale, dict } = await getPageContext(params);
+  const ctx = await getPageContext(params);
+  const { locale, dict, content } = ctx;
   const p = dict.pricing;
   const faq = [dict.faq.items[3], dict.faq.items[5], dict.faq.items[4]];
+  const cityDiffs = activeCities(content)
+    .filter((c) => c.priceMultiplier !== 1)
+    .map((c) => `${c.names[locale].name} ${c.priceMultiplier < 1 ? '−' : '+'}${Math.round(Math.abs(1 - c.priceMultiplier) * 100)} %`);
+  const notes = [p.note, cityDiffs.length ? t(p.cityDiff, { list: cityDiffs.join(', ') }) : null, dict.estimator.sundayNote, dict.common.vatIncluded, dict.common.trustNearCta].filter(
+    (n): n is string => !!n,
+  );
+
   return (
     <>
       <PageHeader
@@ -38,7 +47,7 @@ export default async function PricingPage({ params }: LangParams) {
       />
       <section id="skaiciuokle" className="scroll-mt-(--header-h)" aria-label={dict.estimator.title}>
         <div className="container-x">
-          <BookingEstimator {...estimatorProps(locale, dict, { showHeading: false })} />
+          <BookingEstimator {...estimatorProps(ctx, { showHeading: false })} />
         </div>
       </section>
 
@@ -47,14 +56,14 @@ export default async function PricingPage({ params }: LangParams) {
           <h2 id="rates-title" className="text-h2 font-bold">
             {p.ratesTitle}
           </h2>
-          <PriceCards locale={locale} dict={dict} />
+          <PriceCards locale={locale} dict={dict} content={content} />
           <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
             <div className="grid content-start gap-4">
               <h3 className="text-h4 font-bold">{p.extrasTitle}</h3>
-              <ExtrasPriceList locale={locale} dict={dict} />
+              <ExtrasPriceList locale={locale} content={content} />
             </div>
             <ul className="grid content-start gap-3 self-end rounded-[20px] bg-mint p-6 text-[0.9375rem]">
-              {[p.note, p.cityNote, dict.common.vatIncluded, dict.common.trustNearCta].map((n) => (
+              {notes.map((n) => (
                 <li key={n} className="flex gap-2.5">
                   <Icon name="checkCircle" size={18} className="mt-0.5 flex-none text-primary" />
                   {n}

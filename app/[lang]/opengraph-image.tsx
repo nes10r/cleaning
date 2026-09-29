@@ -1,17 +1,19 @@
 import { ImageResponse } from 'next/og';
 import { isLocale, locales } from '@/config/i18n';
-import { site } from '@/config/site';
+import { getContent } from '@/lib/content';
 import { getDictionary } from '@/lib/dictionary';
 
 export const size = { width: 1200, height: 630 };
 export const contentType = 'image/png';
-export const alt = `${site.name}`;
+export const alt = 'Preview';
 export const generateStaticParams = () => locales.map((lang) => ({ lang }));
 
 /** Default social preview for every page in a locale. */
 export default async function OgImage({ params }: { params: Promise<{ lang: string }> }) {
   const { lang } = await params;
-  const dict = getDictionary(isLocale(lang) ? lang : 'lt');
+  const content = await getContent();
+  const site = content.site;
+  const dict = getDictionary(isLocale(lang) ? lang : 'lt', site.name);
   return new ImageResponse(
     (
       <div style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', padding: 72, background: '#F8FAF8', color: '#17211F' }}>

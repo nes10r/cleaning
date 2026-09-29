@@ -1,7 +1,8 @@
 import type { Locale } from '@/config/i18n';
 import { ROUTES } from '@/config/routes';
-import { site } from '@/config/site';
+import type { Content } from '@/lib/content/types';
 import type { Dictionary } from '@/lib/dictionary';
+import { telHref } from '@/lib/format';
 import { localizePath } from '@/lib/i18n';
 import { ArrowLink } from '@/components/ui/button-link';
 import { Icon } from '@/components/ui/icon';
@@ -25,8 +26,9 @@ export function FaqList({ items, openFirst = true }: { items: { q: string; a: st
 }
 
 /** Accordion built on <details name> (exclusive, keyboard-accessible, zero JS). */
-export function Faq({ locale, dict, items, showMore = false }: { locale: Locale; dict: Dictionary; items?: { q: string; a: string }[]; showMore?: boolean }) {
+export function Faq({ locale, dict, content, items, showMore = false }: { locale: Locale; dict: Dictionary; content: Content; items?: { q: string; a: string }[]; showMore?: boolean }) {
   const f = dict.faq;
+  const site = content.site;
   return (
     <section className="section" id="duk" aria-labelledby="faq-title">
       <div className="container-x grid gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.7fr)] lg:gap-16">
@@ -40,7 +42,7 @@ export function Faq({ locale, dict, items, showMore = false }: { locale: Locale;
           </h2>
           <p className="max-w-[38ch] text-ink-2">{f.lead}</p>
           <div className="mt-2 grid gap-1 text-[0.9375rem]">
-            <a href={site.phoneHref} className="flex min-h-11 items-center gap-2.5 font-semibold hover:text-primary">
+            <a href={telHref(site.phone)} className="flex min-h-11 items-center gap-2.5 font-semibold hover:text-primary">
               <Icon name="phone" size={18} className="text-primary" />
               {site.phone}
             </a>

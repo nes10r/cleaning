@@ -2,7 +2,7 @@
  * Availability rules. Deterministic and client-safe for now; replace
  * `getSlotsForDate` with an API call once a scheduling backend exists.
  */
-import { BOOKING_WINDOW_DAYS, TIME_SLOTS, type TimeSlotId } from '@/config/pricing';
+import { BOOKING_WINDOW_DAYS, TIME_SLOTS, type TimeSlotId } from '@/config/booking';
 import { parseISODate, toISODate } from '@/lib/format';
 
 const SATURDAY: TimeSlotId[] = ['08-11', '11-14'];

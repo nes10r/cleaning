@@ -1,15 +1,17 @@
 import Link from 'next/link';
 import type { Locale } from '@/config/i18n';
 import { ROUTES, serviceRoute } from '@/config/routes';
-import { services } from '@/config/services';
-import { site } from '@/config/site';
+import { activeServices } from '@/lib/content/select';
+import type { Content } from '@/lib/content/types';
 import type { Dictionary } from '@/lib/dictionary';
+import { telHref } from '@/lib/format';
 import { localizePath } from '@/lib/i18n';
 import { FacebookIcon, Icon, InstagramIcon } from '@/components/ui/icon';
 import { CookieSettingsButton } from './cookie-consent';
 import { Logo } from './logo';
 
-export function Footer({ locale, dict }: { locale: Locale; dict: Dictionary }) {
+export function Footer({ locale, dict, content }: { locale: Locale; dict: Dictionary; content: Content }) {
+  const site = content.site;
   const p = (path: string) => localizePath(locale, path);
   const f = dict.footer;
   const columns = [
@@ -24,10 +26,9 @@ export function Footer({ locale, dict }: { locale: Locale; dict: Dictionary }) {
     {
       title: f.servicesTitle,
       links: [
-        { label: f.homeCleaning, href: p(serviceRoute(services.regular.slug)) },
-        { label: dict.services.items.deep.name, href: p(serviceRoute(services.deep.slug)) },
-        { label: dict.services.items.office.name, href: p(serviceRoute(services.office.slug)) },
-        { label: dict.services.items.windows.name, href: p(serviceRoute(services.windows.slug)) },
+        ...activeServices(content)
+          .slice(0, 5)
+          .map((s) => ({ label: s.text[locale].name, href: p(serviceRoute(s.slug)) })),
       ],
     },
     {
@@ -52,11 +53,11 @@ export function Footer({ locale, dict }: { locale: Locale; dict: Dictionary }) {
     <footer className="border-t border-line bg-white pb-24 lg:pb-0" data-sticky-hide>
       <div className="container-x grid gap-10 py-14 lg:grid-cols-[1.3fr_repeat(4,1fr)] lg:py-18">
         <div className="grid content-start gap-4">
-          <Logo href={p('/')} tagline={dict.common.tagline} label={`${site.name} – ${dict.common.home}`} />
+          <Logo href={p('/')} name={site.name} logoUrl={site.logoUrl} tagline={site.tagline[locale]} label={`${site.name} – ${dict.common.home}`} />
           <p className="max-w-[30ch] text-sm text-ink-2">{f.tagline}</p>
           <ul className="grid gap-1 text-sm">
             <li>
-              <a href={site.phoneHref} className="inline-flex min-h-9 items-center gap-2 font-semibold hover:text-primary">
+              <a href={telHref(site.phone)} className="inline-flex min-h-9 items-center gap-2 font-semibold hover:text-primary">
                 <Icon name="phone" size={16} className="text-primary" />
                 {site.phone}
               </a>
@@ -71,16 +72,16 @@ export function Footer({ locale, dict }: { locale: Locale; dict: Dictionary }) {
           <div>
             <span className="sr-only">{f.social}</span>
             <ul className="flex gap-1">
-              <li>
+              {site.social.facebook && (<li>
                 <a href={site.social.facebook} className="icon-btn border-transparent" aria-label="Facebook" rel="noopener noreferrer" target="_blank">
                   <FacebookIcon />
                 </a>
-              </li>
-              <li>
+              </li>)}
+              {site.social.instagram && (<li>
                 <a href={site.social.instagram} className="icon-btn border-transparent" aria-label="Instagram" rel="noopener noreferrer" target="_blank">
                   <InstagramIcon />
                 </a>
-              </li>
+              </li>)}
             </ul>
           </div>
         </div>

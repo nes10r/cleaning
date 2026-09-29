@@ -1,48 +1,45 @@
 /** Schema.org JSON-LD builders. No ratings are emitted until real reviews are integrated. */
-import { activeCities } from '@/config/cities';
 import type { Locale } from '@/config/i18n';
-import { PRICING } from '@/config/pricing';
-import { site } from '@/config/site';
-import type { ServiceKey } from '@/config/services';
+import { OPENING_HOURS_SCHEMA, SITE_URL } from '@/config/site';
+import type { Content } from '@/lib/content/types';
+import { activeCities } from '@/lib/content/select';
 import { absoluteUrl } from './seo';
 import { localizePath } from './i18n';
 
-const BUSINESS_ID = `${site.url}/#business`;
+const BUSINESS_ID = `${SITE_URL}/#business`;
+const DAY: Record<string, string> = { Mo: 'Monday', Tu: 'Tuesday', We: 'Wednesday', Th: 'Thursday', Fr: 'Friday', Sa: 'Saturday', Su: 'Sunday' };
+const abs = (src: string) => (src.startsWith('http') ? src : absoluteUrl(src));
 
-export function localBusinessSchema(locale: Locale, description: string) {
+export function localBusinessSchema(locale: Locale, description: string, content: Content, areaServed?: string) {
+  const s = content.site;
   return {
     '@context': 'https://schema.org',
     '@type': 'LocalBusiness',
     '@id': BUSINESS_ID,
-    name: site.name,
-    legalName: site.legalName,
+    name: s.name,
+    legalName: s.legalName,
     description,
     url: absoluteUrl(localizePath(locale, '/')),
-    telephone: site.phone,
-    email: site.email,
-    image: absoluteUrl('/images/placeholders/hero-apartment.svg'),
+    telephone: s.phone,
+    email: s.email,
+    image: abs(content.images.hero),
+    ...(s.logoUrl ? { logo: abs(s.logoUrl) } : {}),
     priceRange: '€€',
     currenciesAccepted: 'EUR',
     paymentAccepted: 'Cash, Credit Card, Bank Transfer',
-    address: {
-      '@type': 'PostalAddress',
-      streetAddress: site.address.street,
-      addressLocality: site.address.city,
-      postalCode: site.address.postalCode,
-      addressCountry: site.address.country,
-    },
-    areaServed: activeCities.map((c) => ({ '@type': 'City', name: c.names.lt.name })),
-    openingHoursSpecification: site.openingHours.map((h) => ({
+    address: { '@type': 'PostalAddress', streetAddress: s.address.street, addressLocality: s.address.city, postalCode: s.address.postalCode, addressCountry: 'LT' },
+    areaServed: areaServed ? { '@type': 'City', name: areaServed } : activeCities(content).map((c) => ({ '@type': 'City', name: c.names.lt.name })),
+    openingHoursSpecification: OPENING_HOURS_SCHEMA.map((h) => ({
       '@type': 'OpeningHoursSpecification',
-      dayOfWeek: h.days.map((d) => `https://schema.org/${{ Mo: 'Monday', Tu: 'Tuesday', We: 'Wednesday', Th: 'Thursday', Fr: 'Friday', Sa: 'Saturday', Su: 'Sunday' }[d]}`),
+      dayOfWeek: h.days.map((d) => `https://schema.org/${DAY[d]}`),
       opens: h.opens,
       closes: h.closes,
     })),
-    sameAs: Object.values(site.social),
+    sameAs: Object.values(s.social).filter(Boolean),
   };
 }
 
-export function serviceSchema(opts: { locale: Locale; service: ServiceKey; name: string; description: string; path: string; cityName?: string; minPrice: number }) {
+export function serviceSchema(opts: { locale: Locale; content: Content; name: string; description: string; path: string; cityName?: string; minPrice: number }) {
   return {
     '@context': 'https://schema.org',
     '@type': 'Service',
@@ -51,12 +48,12 @@ export function serviceSchema(opts: { locale: Locale; service: ServiceKey; name:
     description: opts.description,
     url: absoluteUrl(localizePath(opts.locale, opts.path)),
     provider: { '@id': BUSINESS_ID },
-    areaServed: opts.cityName ? { '@type': 'City', name: opts.cityName } : activeCities.map((c) => ({ '@type': 'City', name: c.names.lt.name })),
+    areaServed: opts.cityName ? { '@type': 'City', name: opts.cityName } : activeCities(opts.content).map((c) => ({ '@type': 'City', name: c.names.lt.name })),
     offers: {
       '@type': 'Offer',
-      priceCurrency: PRICING.currency,
+      priceCurrency: 'EUR',
       price: opts.minPrice,
-      priceSpecification: { '@type': 'PriceSpecification', minPrice: opts.minPrice, priceCurrency: PRICING.currency, valueAddedTaxIncluded: true },
+      priceSpecification: { '@type': 'PriceSpecification', minPrice: opts.minPrice, priceCurrency: 'EUR', valueAddedTaxIncluded: true },
     },
   };
 }

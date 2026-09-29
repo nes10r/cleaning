@@ -1,9 +1,10 @@
 import type { Locale } from '@/config/i18n';
+import type { Content } from '@/lib/content/types';
 import type { Dictionary } from '@/lib/dictionary';
 import { Icon } from '@/components/ui/icon';
 import { BeforeAfterSlider } from './before-after';
 
-export function BeforeAfterSection({ locale, dict }: { locale: Locale; dict: Dictionary }) {
+export function BeforeAfterSection({ locale, dict, content }: { locale: Locale; dict: Dictionary; content: Content }) {
   const b = dict.beforeAfter;
   return (
     <section className="section" aria-labelledby="ba-title">
@@ -23,7 +24,7 @@ export function BeforeAfterSection({ locale, dict }: { locale: Locale; dict: Dic
           </p>
         </div>
         <div className="reveal">
-          <BeforeAfterSlider locale={locale} labels={{ before: b.before, after: b.after, slider: b.slider }} />
+          <BeforeAfterSlider locale={locale} beforeSrc={content.images.before} afterSrc={content.images.after} labels={{ before: b.before, after: b.after, slider: b.slider }} />
         </div>
       </div>
     </section>

@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { EMAIL_RE } from '@/lib/booking/validation';
 import { rateLimited, readJson, str } from '@/lib/server/http';
-import { messages } from '@/lib/server/store';
+import { db, newId } from '@/lib/db';
 
 export async function POST(request: Request) {
   const limited = rateLimited(request, 'contact', 5);
@@ -15,6 +15,11 @@ export async function POST(request: Request) {
   if (name.length < 2 || !EMAIL_RE.test(email) || message.length < 10) {
     return NextResponse.json({ error: 'validation' }, { status: 422 });
   }
-  await messages.create({ name, email, phone: str(body.phone, 30), topic: str(body.topic, 20), message, createdAt: new Date().toISOString() });
+  try {
+    await db().insertRecord({ id: newId('c'), kind: 'contact', status: 'new', data: { name, email, phone: str(body.phone, 30), topic: str(body.topic, 20), message } });
+  } catch (e) {
+    console.error('[contact] save failed', e);
+    return NextResponse.json({ error: 'storage' }, { status: 503 });
+  }
   return NextResponse.json({ ok: true }, { status: 201 });
 }

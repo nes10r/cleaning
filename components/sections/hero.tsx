@@ -1,4 +1,6 @@
+import { IMAGE_SLOTS } from '@/config/images';
 import type { Locale } from '@/config/i18n';
+import type { Content } from '@/lib/content/types';
 import { ROUTES } from '@/config/routes';
 import type { Dictionary } from '@/lib/dictionary';
 import { localizePath } from '@/lib/i18n';
@@ -6,7 +8,7 @@ import { ButtonLink } from '@/components/ui/button-link';
 import { Icon } from '@/components/ui/icon';
 import { SiteImage } from '@/components/ui/site-image';
 
-export function Hero({ locale, dict }: { locale: Locale; dict: Dictionary }) {
+export function Hero({ locale, dict, content }: { locale: Locale; dict: Dictionary; content: Content }) {
   const h = dict.hero;
   return (
     <section className="relative overflow-hidden pt-8 pb-16 lg:pt-12 lg:pb-40" aria-labelledby="hero-title">
@@ -42,7 +44,7 @@ export function Hero({ locale, dict }: { locale: Locale; dict: Dictionary }) {
 
         <div className="relative">
           <div className="animate-hero-img relative aspect-[9/10] overflow-hidden rounded-[28px] shadow-lg sm:rounded-[160px_28px_28px_28px/200px_28px_28px_28px] lg:aspect-[10/11]">
-            <SiteImage image="hero" locale={locale} fill priority sizes="(min-width: 1024px) 560px, 100vw" className="object-cover" />
+            <SiteImage src={content.images.hero} alt={IMAGE_SLOTS.hero.alt[locale]} fill priority sizes="(min-width: 1024px) 560px, 100vw" className="object-cover" />
           </div>
           <div className="animate-hero absolute -left-2 bottom-6 flex items-center gap-3 rounded-2xl bg-white/95 p-3.5 pr-4 shadow-lg backdrop-blur [animation-delay:500ms] sm:-left-6 lg:bottom-16">
             <span className="grid size-10 place-items-center rounded-xl bg-primary-soft text-primary">

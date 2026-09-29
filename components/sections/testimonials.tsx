@@ -1,3 +1,5 @@
+import type { Locale } from '@/config/i18n';
+import type { Content } from '@/lib/content/types';
 import type { Dictionary } from '@/lib/dictionary';
 import { SectionHeading } from '@/components/ui/section-heading';
 import { Stars } from '@/components/ui/stars';
@@ -8,8 +10,9 @@ const AVATAR = ['bg-primary-soft text-primary-active', 'bg-[#F3E9D8] text-[#7A54
  * Customer testimonials. Replace with real, consented reviews before launch.
  * No platform (e.g. Google) is named and no aggregate rating is claimed.
  */
-export function Testimonials({ dict, filterCity, title }: { dict: Dictionary; filterCity?: string; title?: string }) {
+export function Testimonials({ locale, dict, content, filterCity, title }: { locale: Locale; dict: Dictionary; content: Content; filterCity?: string; title?: string }) {
   const r = dict.reviews;
+  const tagFor = (key: string) => content.services.find((s) => s.key === key && s.active)?.text[locale].tag;
   const items = filterCity ? r.items.filter((i) => i.city === filterCity).concat(r.items.filter((i) => i.city !== filterCity)).slice(0, 3) : r.items;
   return (
     <section className="section" aria-labelledby="reviews-title">
@@ -29,9 +32,9 @@ export function Testimonials({ dict, filterCity, title }: { dict: Dictionary; fi
                     <b className="text-[0.9375rem]">{item.name}</b>
                     <span className="text-sm text-ink-2">{item.city}</span>
                   </span>
-                  <span className="ml-auto rounded-full bg-surface-2 px-2.5 py-1 text-xs font-semibold whitespace-nowrap text-ink-2">
-                    {dict.services.items[item.service as keyof typeof dict.services.items]?.tag}
-                  </span>
+                  {tagFor(item.service) && (
+                    <span className="ml-auto rounded-full bg-surface-2 px-2.5 py-1 text-xs font-semibold whitespace-nowrap text-ink-2">{tagFor(item.service)}</span>
+                  )}
                 </figcaption>
               </figure>
             </li>

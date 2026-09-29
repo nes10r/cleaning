@@ -1,7 +1,5 @@
 /** Shared validation — used by the wizard and re-run by the bookings API. */
-import { cityByKey } from '@/config/cities';
-import { PRICING, extraKeys, propertyTypes } from '@/config/pricing';
-import { isServiceKey } from '@/config/services';
+import { propertyTypes } from '@/config/booking';
 import { isDateBookable, isSlotAvailable } from './availability';
 import type { BookingDraft, BookingField } from './types';
 
@@ -28,10 +26,15 @@ export const STEP_FIELDS: Record<number, BookingField[]> = {
   7: ['consent'],
 };
 
-export function validateField(field: BookingField, d: BookingDraft): boolean {
+/** Limits that come from the admin-managed pricing settings. */
+export interface ValidationRules {
+  area: { min: number; max: number };
+}
+
+export function validateField(field: BookingField, d: BookingDraft, rules: ValidationRules): boolean {
   switch (field) {
     case 'area':
-      return Number.isFinite(d.area) && d.area >= PRICING.area.min && d.area <= PRICING.area.max;
+      return Number.isFinite(d.area) && d.area >= rules.area.min && d.area <= rules.area.max;
     case 'address':
       return d.address.trim().length >= 4 && /\d/.test(d.address);
     case 'date':
@@ -51,14 +54,17 @@ export function validateField(field: BookingField, d: BookingDraft): boolean {
   }
 }
 
-export function validateStep(step: number, d: BookingDraft): BookingField[] {
-  return (STEP_FIELDS[step] ?? []).filter((f) => !validateField(f, d));
+export function validateStep(step: number, d: BookingDraft, rules: ValidationRules): BookingField[] {
+  return (STEP_FIELDS[step] ?? []).filter((f) => !validateField(f, d, rules));
 }
 
-/** Full server-side check, including enum integrity. */
-export function validateBooking(d: BookingDraft): BookingField[] | 'invalid' {
-  if (!isServiceKey(d.service) || !propertyTypes.includes(d.propertyType) || !cityByKey(d.cityKey)) return 'invalid';
-  if (!Array.isArray(d.extras) || d.extras.some((e) => !extraKeys.includes(e))) return 'invalid';
+/** Full server-side check, including that service, city and extras exist and are active. */
+export function validateBooking(
+  d: BookingDraft,
+  rules: ValidationRules & { services: string[]; cities: string[]; extras: string[] },
+): BookingField[] | 'invalid' {
+  if (!rules.services.includes(d.service) || !propertyTypes.includes(d.propertyType) || !rules.cities.includes(d.cityKey)) return 'invalid';
+  if (!Array.isArray(d.extras) || d.extras.some((e) => !rules.extras.includes(e))) return 'invalid';
   const fields = Object.values(STEP_FIELDS).flat();
-  return fields.filter((f) => !validateField(f, d));
+  return fields.filter((f) => !validateField(f, d, rules));
 }

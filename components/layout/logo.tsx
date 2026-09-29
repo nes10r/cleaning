@@ -1,5 +1,4 @@
 import Link from 'next/link';
-import { site } from '@/config/site';
 
 export function LogoMark({ className = 'size-9' }: { className?: string }) {
   return (
@@ -11,14 +10,22 @@ export function LogoMark({ className = 'size-9' }: { className?: string }) {
   );
 }
 
-export function Logo({ href, tagline, label }: { href: string; tagline: string; label: string }) {
+/** An uploaded logo replaces the mark + wordmark; otherwise the built-in mark and the company name are shown. */
+export function Logo({ href, name, tagline, logoUrl, label }: { href: string; name: string; tagline: string; logoUrl: string | null; label: string }) {
   return (
     <Link href={href} className="inline-flex items-center gap-2.5 rounded-lg text-ink" aria-label={label}>
-      <LogoMark className="size-9 text-primary" />
-      <span className="grid leading-none">
-        <span className="text-xl font-bold tracking-tight">{site.name}</span>
-        <span className="mt-1 hidden text-[0.6875rem] font-medium text-ink-2 sm:block">{tagline}</span>
-      </span>
+      {logoUrl ? (
+        // eslint-disable-next-line @next/next/no-img-element -- any aspect ratio / SVG, sized by height
+        <img src={logoUrl} alt={name} className="h-10 w-auto max-w-[11rem] object-contain" />
+      ) : (
+        <>
+          <LogoMark className="size-9 text-primary" />
+          <span className="grid leading-none">
+            <span className="text-xl font-bold tracking-tight">{name}</span>
+            {tagline && <span className="mt-1 hidden text-[0.6875rem] font-medium text-ink-2 sm:block">{tagline}</span>}
+          </span>
+        </>
+      )}
     </Link>
   );
 }

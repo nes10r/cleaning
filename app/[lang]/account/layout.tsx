@@ -2,8 +2,7 @@ import type { Metadata } from 'next';
 import type { ReactNode } from 'react';
 import { ROUTES } from '@/config/routes';
 import { localizePath } from '@/lib/i18n';
-import { getPageContext, type LangParams } from '@/lib/page';
-import { pageMetadata } from '@/lib/seo';
+import { getPageContext, metaFor, type LangParams } from '@/lib/page';
 import { Icon } from '@/components/ui/icon';
 import { AccountNav } from '@/components/layout/account-nav';
 
@@ -12,8 +11,8 @@ import { AccountNav } from '@/components/layout/account-nav';
  * (e.g. email magic link) and fetch data in each page once a backend exists.
  */
 export async function generateMetadata({ params }: LangParams): Promise<Metadata> {
-  const { locale, dict } = await getPageContext(params);
-  return pageMetadata({ locale, path: ROUTES.account, ...dict.meta.account, noindex: true });
+  const ctx = await getPageContext(params);
+  return metaFor(ctx, ROUTES.account, ctx.dict.meta.account, true);
 }
 
 const SECTIONS = [

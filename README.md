@@ -14,6 +14,8 @@ Copy `.env.example` to `.env.local` and set `NEXT_PUBLIC_SITE_URL`.
 
 ## Where to change things
 
+Prices, packages, cities, company details, the logo and images are edited in the admin panel (see below). The `config/` files only hold the defaults that seed the database.
+
 | What | File |
 | --- | --- |
 | Prices, minimums, extras, Sunday surcharge, time slots | `config/pricing.ts` |
@@ -25,6 +27,23 @@ Copy `.env.example` to `.env.local` and set `NEXT_PUBLIC_SITE_URL`.
 | All copy | `locales/lt.ts` (source of truth), `locales/en.ts`, `locales/ru.ts` |
 | Privacy / cookie / terms text | `locales/legal.ts` (**have a lawyer review before launch**) |
 | Design tokens | `app/globals.css` (`@theme`), full spec in `design/tokens.css` and `design/svarapro-design-system.html` |
+
+## Admin panel
+
+`/admin` (login with `ADMIN_PASSWORD`; the session cookie is signed with `ADMIN_SECRET`). Sections:
+
+| Section | What it manages |
+| --- | --- |
+| İcmal | counts, latest bookings, storage status |
+| Sifarişlər | bookings: filter, search, status, delete, CSV export |
+| Sorğular | contact messages and cleaner applications |
+| Paketlər | packages (texts LT/EN/RU, slug, icon, image, prices) and extras |
+| Qiymətlər | package/extra price tables, Sunday surcharge, multipliers, live preview |
+| Şəhərlər | cities, districts, price multiplier, SEO slugs |
+| Media | upload (Vercel Blob, or `.data/uploads` locally), usage, delete |
+| Parametrlər | company details, logo, tagline, hours, contacts, fixed site images |
+
+Content is stored in the database (`lib/db`, Postgres via `DATABASE_URL`, otherwise `.data/db.json`); `config/*` values only seed it. Every save is validated in `lib/content/sanitize.ts` and revalidates the public site.
 
 ## Architecture
 
@@ -40,7 +59,7 @@ app/
     tapk-valytoju/        cleaner recruitment
     apie-mus, duk, kontaktai, privatumo-politika, slapuku-politika, paslaugu-teikimo-salygos
   api/bookings|address|applications|contact
-  admin/                  separate root layout, noindex, planned modules only
+  admin/                  admin panel (Azerbaijani UI): login + (panel)/ pages, server actions in actions.ts
   sitemap.ts, robots.ts, global-not-found.tsx
 proxy.ts                  locale routing (see below)
 config/                   business configuration
@@ -71,5 +90,6 @@ components/ui|layout|sections|booking|forms
 - [ ] Fill in the company code and VAT code in `config/site.ts` and check the phone number and address.
 - [ ] Have a lawyer review the legal texts.
 - [ ] Connect a database, email/SMS, and real availability (`lib/booking/availability.ts`).
-- [ ] Add authentication for `/account` and `/admin`.
+- [ ] Add authentication for `/account` (`/admin` is protected by `ADMIN_PASSWORD`).
+- [ ] Set `DATABASE_URL`, `ADMIN_PASSWORD`, `ADMIN_SECRET` and `BLOB_READ_WRITE_TOKEN` on Vercel.
 - [ ] Replace the in-memory rate limiter with a shared store (e.g. Redis) if you run more than one instance.

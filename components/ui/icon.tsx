@@ -102,9 +102,17 @@ const icons = {
 } as const;
 
 export type IconName = keyof typeof icons;
+export const iconNames = Object.keys(icons) as IconName[];
 
-export function Icon({ name, size = 20, strokeWidth = 1.85, ...props }: { name: IconName } & LucideProps) {
-  const Component = icons[name];
+/** Icons offered for packages and extras in the admin panel. */
+export const PICKABLE_ICONS: IconName[] = [
+  'repeat', 'sparkles', 'paintRoller', 'boxes', 'briefcase', 'appWindow', 'house', 'building', 'bath', 'sofa',
+  'oven', 'fridge', 'fence', 'leaf', 'truck', 'award', 'wallet', 'plus',
+];
+
+/** Accepts any string (e.g. from the database); unknown names fall back to "sparkles". */
+export function Icon({ name, size = 20, strokeWidth = 1.85, ...props }: { name: IconName | (string & {}) } & LucideProps) {
+  const Component = icons[name as IconName] ?? icons.sparkles;
   return <Component size={size} strokeWidth={strokeWidth} aria-hidden="true" focusable="false" {...props} />;
 }
 

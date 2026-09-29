@@ -1,0 +1,133 @@
+/* Compact controls for the admin panel (the public .input/.btn are sized for customers). */
+@layer components {
+  .a-input {
+    width: 100%;
+    min-height: 2.5rem;
+    padding: 0 0.75rem;
+    border: 1px solid var(--color-line-strong);
+    border-radius: 10px;
+    background: #fff;
+    font: inherit;
+    font-size: 0.9375rem;
+    color: var(--color-ink);
+    transition:
+      border-color 150ms,
+      box-shadow 150ms;
+  }
+  .a-input:focus {
+    outline: none;
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px rgb(15 92 77 / 0.14);
+  }
+  textarea.a-input {
+    min-height: 5rem;
+    padding: 0.5rem 0.75rem;
+    line-height: 1.5;
+    resize: vertical;
+  }
+  .a-label {
+    display: grid;
+    gap: 0.3rem;
+    align-content: start;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: var(--color-ink-2);
+  }
+  .a-check {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .a-check input {
+    width: 1.05rem;
+    height: 1.05rem;
+    accent-color: var(--color-primary);
+  }
+  .a-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    min-height: 2.5rem;
+    padding: 0 1rem;
+    border-radius: 10px;
+    border: 1px solid var(--color-line-strong);
+    background: #fff;
+    font-size: 0.9375rem;
+    font-weight: 600;
+    color: var(--color-ink);
+    cursor: pointer;
+    white-space: nowrap;
+    transition:
+      background-color 150ms,
+      border-color 150ms;
+  }
+  .a-btn:hover:not(:disabled) {
+    background: var(--color-surface-2);
+  }
+  .a-btn:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+  }
+  .a-btn-primary {
+    background: var(--color-primary);
+    border-color: var(--color-primary);
+    color: #fff;
+  }
+  .a-btn-primary:hover:not(:disabled) {
+    background: var(--color-primary-hover);
+  }
+  .a-btn-danger {
+    color: var(--color-error);
+    border-color: #f1c4c0;
+  }
+  .a-btn-danger:hover:not(:disabled) {
+    background: var(--color-error-soft);
+  }
+  .a-btn-sm {
+    min-height: 2rem;
+    padding: 0 0.625rem;
+    font-size: 0.8125rem;
+  }
+  .a-card {
+    background: #fff;
+    border: 1px solid var(--color-line);
+    border-radius: 16px;
+  }
+  .a-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.125rem 0.5rem;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    white-space: nowrap;
+  }
+  .a-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.875rem;
+  }
+  .a-table th {
+    text-align: left;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--color-ink-muted);
+    padding: 0.625rem 0.75rem;
+    border-bottom: 1px solid var(--color-line);
+    white-space: nowrap;
+  }
+  .a-table td {
+    padding: 0.625rem 0.75rem;
+    border-bottom: 1px solid var(--color-line);
+    vertical-align: top;
+  }
+  .a-table tr:last-child td {
+    border-bottom: 0;
+  }
+}

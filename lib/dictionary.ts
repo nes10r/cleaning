@@ -5,6 +5,18 @@ import en from '@/locales/en';
 import ru from '@/locales/ru';
 
 const dictionaries: Record<Locale, Dictionary> = { lt, en, ru };
+const cache = new Map<string, Dictionary>();
 
-export const getDictionary = (locale: Locale): Dictionary => dictionaries[locale];
+/** Dictionary with the {brand} placeholder filled in from the admin-managed company name. */
+export function getDictionary(locale: Locale, brand: string): Dictionary {
+  const key = `${locale}|${brand}`;
+  let d = cache.get(key);
+  if (!d) {
+    const safe = JSON.stringify(brand).slice(1, -1);
+    d = JSON.parse(JSON.stringify(dictionaries[locale]).replaceAll('{brand}', safe)) as Dictionary;
+    if (cache.size > 20) cache.clear();
+    cache.set(key, d);
+  }
+  return d;
+}
 export type { Dictionary };

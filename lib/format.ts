@@ -40,3 +40,6 @@ export function parseISODate(iso: string): Date {
 export function toISODate(d: Date): string {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 }
+
+/** "+370 612 34567" → "tel:+37061234567" */
+export const telHref = (phone: string) => `tel:${phone.replace(/[^\d+]/g, '')}`;

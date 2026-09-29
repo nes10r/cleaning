@@ -1,5 +1,4 @@
 import 'server-only';
-import { cityByKey } from '@/config/cities';
 
 /**
  * Address autocomplete abstraction. The /api/address route calls
@@ -11,8 +10,15 @@ export interface AddressSuggestion {
   secondary?: string;
 }
 
+/** The city the search is limited to (from the admin-managed city list). */
+export interface GeoCity {
+  key: string;
+  name: string;
+  geo: { lat: number; lng: number };
+}
+
 export interface GeoProvider {
-  autocomplete(query: string, cityKey: string, language: string): Promise<AddressSuggestion[]>;
+  autocomplete(query: string, city: GeoCity, language: string): Promise<AddressSuggestion[]>;
 }
 
 /** Offline provider: matches common street names so the UX works without API keys. */
@@ -25,9 +31,8 @@ const STREETS: Record<string, string[]> = {
 const fold = (s: string) => s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
 
 const mockProvider: GeoProvider = {
-  async autocomplete(query, cityKey) {
-    const city = cityByKey(cityKey);
-    const list = STREETS[cityKey] ?? [];
+  async autocomplete(query, city) {
+    const list = STREETS[city.key] ?? [];
     const number = query.match(/\d+[a-zA-Z]?(?:[-–]\d+)?/)?.[0] ?? '';
     const words = fold(query.replace(number, '')).trim();
     if (words.length < 2) return [];
@@ -36,24 +41,23 @@ const mockProvider: GeoProvider = {
       .slice(0, 5)
       .map((s) => {
         const label = number ? `${s} ${number}` : s;
-        return { id: `mock:${cityKey}:${label}`, label, secondary: city?.names.lt.name };
+        return { id: `mock:${city.key}:${label}`, label, secondary: city.name };
       });
   },
 };
 
 function googleProvider(key: string): GeoProvider {
   return {
-    async autocomplete(query, cityKey, language) {
-      const city = cityByKey(cityKey);
+    async autocomplete(query, city, language) {
       const res = await fetch('https://places.googleapis.com/v1/places:autocomplete', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'X-Goog-Api-Key': key },
         body: JSON.stringify({
-          input: `${query}, ${city?.names.lt.name ?? ''}`,
+          input: `${query}, ${city.name}`,
           includedRegionCodes: ['lt'],
           languageCode: language,
           includedPrimaryTypes: ['street_address', 'premise', 'route'],
-          ...(city ? { locationBias: { circle: { center: { latitude: city.geo.lat, longitude: city.geo.lng }, radius: 20000 } } } : {}),
+          locationBias: { circle: { center: { latitude: city.geo.lat, longitude: city.geo.lng }, radius: 20000 } },
         }),
       });
       if (!res.ok) return [];
@@ -69,10 +73,9 @@ function googleProvider(key: string): GeoProvider {
 
 function mapboxProvider(token: string): GeoProvider {
   return {
-    async autocomplete(query, cityKey, language) {
-      const city = cityByKey(cityKey);
+    async autocomplete(query, city, language) {
       const params = new URLSearchParams({ q: query, country: 'lt', autocomplete: 'true', limit: '5', types: 'address', language, access_token: token });
-      if (city) params.set('proximity', `${city.geo.lng},${city.geo.lat}`);
+      params.set('proximity', `${city.geo.lng},${city.geo.lat}`);
       const res = await fetch(`https://api.mapbox.com/search/geocode/v6/forward?${params}`);
       if (!res.ok) return [];
       const data = (await res.json()) as { features?: { id: string; properties: { name: string; place_formatted?: string } }[] };

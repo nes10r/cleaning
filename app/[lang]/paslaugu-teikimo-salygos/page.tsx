@@ -4,11 +4,10 @@ import { getPageContext, type LangParams } from '@/lib/page';
 import { LegalPage, legalMetadata } from '@/components/sections/legal-page';
 
 export async function generateMetadata({ params }: LangParams): Promise<Metadata> {
-  const { locale, dict } = await getPageContext(params);
-  return legalMetadata(locale, dict, 'terms', ROUTES.terms);
+  return legalMetadata(await getPageContext(params), 'terms', ROUTES.terms);
 }
 
 export default async function TermsPage({ params }: LangParams) {
-  const { locale, dict } = await getPageContext(params);
-  return <LegalPage locale={locale} dict={dict} docKey="terms" path={ROUTES.terms} />;
+  const { locale, dict, content } = await getPageContext(params);
+  return <LegalPage locale={locale} dict={dict} content={content} docKey="terms" path={ROUTES.terms} />;
 }
